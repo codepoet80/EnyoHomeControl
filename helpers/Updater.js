@@ -57,7 +57,7 @@ enyo.kind({
     ],
     create: function() {
         this.inherited(arguments);
-        enyo.log("Update Helper created.");
+        enyo.log("Update Helper created as: " + this.name);
     },
     CheckForUpdate: function(appName) {
         enyo.log("Update Helper is checking for updates...");

@@ -5,7 +5,7 @@
 	"type": "web",
 	"main": "index.html",
 	"title": "Home Control",
-	"splashicon": "icon-256x256.png",
-	"icon": "icon.png",
+	"splashicon": "icons/icon-256x256.png",
+	"icon": "icons/icon.png",
 	"uiRevision": 2
 }
