@@ -46,7 +46,7 @@ enyo.kind({
 				{name: "headerLights", kind: "Header", content: "Lights", domStyles: {"font-weight": "bold"}},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "lightList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderLightRow", components: [
-						{kind: "Item", className: "item",  onclick: "lightClick", /*Xonmousedown: "lightClick",*/ components: [
+						{kind: "Item", className: "item", onclick: "lightClick", /*Xonmousedown: "lightClick",*/ components: [
 							{w: "fill", name:"lightListContainer", domStyles: {margin: "-12px", padding: "12px"}, components: [
 								{kind: "HFlexBox", components: [
 									{name: "lightCaption", flex: 2, domStyles: {overflow: "hidden", "text-overflow": "ellipsis"} },
@@ -64,7 +64,7 @@ enyo.kind({
 				{name: "headerDetail", kind: "Header", domStyles: {"font-weight": "bold"}, content: "Nothing Selected", domStyles: {overflow: "hidden", "text-overflow": "ellipsis"}},
 				{kind: "VFlexBox", flex: 2, pack: "center", components: [
 					{w: "fill", domStyles: {"text-align": "center"}, components: [
-						{kind: "Image", flex:1, name: "imageDetail", src: "icons/icon-256x256.png", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
+						{kind: "Image", flex:1, name: "imageDetail", src: "icons/icon-256x256.png", onclick: "lightControlClick", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
 					]},
 					{w: "fill", name: "captionDetail", content: "Home Control", domStyles: {"text-align": "center", "margin-left": "100px", "margin-right": "100px"}}
 				]},
@@ -169,6 +169,12 @@ enyo.kind({
 				this.$.captionDetail.setContent("Light Bulb Control");
 				break;
 		}
+	},
+	lightControlClick: function(inSender, inEvent) {
+		if (this.$.imageDetail.src == "images/lightbulb-on.png")
+			this.$.imageDetail.setSrc("images/lightbulb-off.png");
+		else
+			this.$.imageDetail.setSrc("images/lightbulb-on.png");
 	}
 });
 /*
