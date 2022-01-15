@@ -7,7 +7,9 @@ Homebridge Helper
  Description: A helper to interact with Homebridge for home automation
 */
 name = "homebridgehelper",
-homebridgeApiUrl = "http://homebridge.local/api/";
+defaultHomebridgeServer = "homebridge.local";
+defaultHomebridgeApiUrl = "http://" + defaultHomebridgeServer + "/api/";
+currentHomebridgeApiUrl = defaultHomebridgeApiUrl;
 enyo.kind({
     name: "Helpers.Homebridge",
     kind: "Control",
@@ -25,8 +27,8 @@ enyo.kind({
     },
     LoadHomeData: function(sender, server, user, pass, successHandler, failureHandler) {
         if (server)
-            homebridgeApiUrl = homebridgeApiUrl.replace("homebridge.local", server);
-        enyo.log("Homebridge Helper is trying to get data from server " + homebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
+            currentHomebridgeApiUrl = currentHomebridgeApiUrl.replace("homebridge.local", server);
+        enyo.log("Homebridge Helper is trying to get data from server " + currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
 
         this.sender = sender;
 
@@ -35,7 +37,7 @@ enyo.kind({
         if (failureHandler)
             this.OnDataFailure = failureHandler.bind(this);
 
-        this.$.doLogin.call({username: user, password: pass});
+        this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});
     },
     GetHomeData: function() {   //All the data in the home
         var normalizedData = [];
@@ -71,16 +73,23 @@ enyo.kind({
     bearerToken: "not set",
     homeData: [],
     components: [
-        { kind: "WebService", name: "doLogin", url: homebridgeApiUrl + "auth/login",
+        { kind: "WebService", name: "doLogin", url: defaultHomebridgeApiUrl + "auth/login",
             method: "POST",
             onSuccess: "loginSuccess",
             onFailure: "loginFailure" },
-        { kind: "WebService", name:"getLayout", url: homebridgeApiUrl + "accessories/layout", 
+        { kind: "WebService", name:"getLayout", url: defaultHomebridgeApiUrl + "accessories/layout", 
             method: "GET",
             headers: { "Authorization": "Bearer " },    //to be filled in later
             onSuccess: "getLayoutSuccess", 
             onFailure: "getLayoutFailure" },
     ],
+    callServiceWithLatestProps: function(service, params, headers) {    //Solve a race condition where service properties aren't updated
+        service.setUrl(service.url.replace(defaultHomebridgeApiUrl, currentHomebridgeApiUrl));
+        if (headers) {
+            service.setHeaders(headers);
+        }
+        service.call(params);
+    },
     loginSuccess: function(inSender, inResponse, inRequest)  {
 		enyo.log("Homebridge Helper got login response: " + JSON.stringify(inResponse));	
 		if (inResponse && inResponse.access_token) {
@@ -92,12 +101,11 @@ enyo.kind({
 		}
 	},
     loginFailure: function(inSender, inResponse, inRequest) {
-
+        enyo.error("Homebridge Helper hit an error during login");
 	},
     getHomeData: function(inSender) {
 		enyo.log("Homebridge Helper is querying data source using token: " + this.bearerToken);
-		this.$.getLayout.setHeaders({"Authorization": "Bearer " + this.bearerToken});
-		this.$.getLayout.call();
+        this.callServiceWithLatestProps(this.$.getLayout, null, {"Authorization": "Bearer " + this.bearerToken})
 	},
     getLayoutSuccess: function(inSender, inResponse, inRequest) {
         if (inResponse) { //and its an object
@@ -109,7 +117,7 @@ enyo.kind({
         }
     },
     getLayoutFailure: function(inSender, inResponse, inRequest) {
-
+        enyo.error("Homebridge Helper hit an error getting home layout");
     },
     //#endregion
 });
