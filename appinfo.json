@@ -1,0 +1,11 @@
+{
+	"id": "com.jonandnic.enyo.homecontrol",
+	"version": "1.0.0",
+	"vendor": "Jon Wise",
+	"type": "web",
+	"main": "index.html",
+	"title": "Home Control",
+	"splashicon": "icon-256x256.png",
+	"icon": "icon.png",
+	"uiRevision": 2
+}
