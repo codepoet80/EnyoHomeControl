@@ -56,16 +56,27 @@ enyo.kind({
         var normalizedData = [];
 		for (var i=0;i<this.homeData.length;i++) {
 			if (this.homeData[i].services) {
-				normalizedData.push({caption: this.homeData[i].name, type: "Room"});
+				normalizedData.push({caption: this.homeData[i].name, type: "Room", uniqueid: this.homeData[i].uniqueid });
 			}
 		}
         return normalizedData;
     },
-    GetAccessoryDataForRoom: function(roomId) {   //Just the accessories in a given room
-
+    GetAccessoryDataForRoom: function(roomId, changeable) {   //Just the accessories in a given room
+        var normalizedData = [];
+		for (var i=0;i<this.homeData.length;i++) {
+			if (this.homeData[i].services) {	//this is a room!
+                if (this.homeData[i].uniqueid == roomId) {
+                    var services = this.homeData[i].services;
+                    for (var j=0;j<services.length;j++) {
+                        normalizedData.push({caption: services[j].uniqueId, type: "Light", uniqueid: services[j].uniqueId});
+                    }
+                }
+			}
+		}
+        return normalizedData;
     },
     GetAccessoryDetail: function(accessoryId) {    //Details for a specific accessory
-
+        return "";
     },
     //#endregion
 
@@ -104,13 +115,18 @@ enyo.kind({
         enyo.error("Homebridge Helper hit an error during login");
 	},
     getHomeData: function(inSender) {
-		enyo.log("Homebridge Helper is querying data source using token: " + this.bearerToken);
         this.callServiceWithLatestProps(this.$.getLayout, null, {"Authorization": "Bearer " + this.bearerToken})
 	},
     getLayoutSuccess: function(inSender, inResponse, inRequest) {
         if (inResponse) { //and its an object
-            enyo.log("Homebridge Helper got layout response: " + inResponse);
+            enyo.log("Homebridge Helper got home layout response: " + inResponse);
             this.homeData = inResponse;
+            for (var i=0;i<inResponse.length;i++){
+                if (inResponse[i].services) {
+                    useid = this.uniqueid();
+                    inResponse[i].uniqueid = useid;
+                }
+            }
             this.OnDataReady(this.sender);
         } else {
             this.$.getLayoutFailure(inSender, inResponse, inResponse);
@@ -119,5 +135,10 @@ enyo.kind({
     getLayoutFailure: function(inSender, inResponse, inRequest) {
         enyo.error("Homebridge Helper hit an error getting home layout");
     },
+    uniqueid: function() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+              .toString(16)
+              .substring(1);
+    }
     //#endregion
 });
