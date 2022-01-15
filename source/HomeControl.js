@@ -53,7 +53,7 @@ enyo.kind({
 		this.username = "admin";
 		this.password = "admin";
 		//TODO: server path
-		this.server = "192.168.1.250";
+		this.server = "homebridge.jonandnic.com";
 		//TODO: helper type (support for multiple back-ends)
 		this.homeHelper = this.$.myHomebridge;
 		
