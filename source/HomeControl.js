@@ -15,10 +15,11 @@ enyo.kind({
 		{kind: "Helpers.Homebridge", name: "myHomebridge" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
 		//UI Elements
-		{kind: "PageHeader", components: [
+		{kind: "PageHeader", className: "enyo-header-dark", components: [
 			{kind: "VFlexBox", flex: 1, align: "center", components: [
-				{content: "Home Control", domStyles: {"font-weight": "bold", "font-size": "larger"}},
-			]}
+				{content: "Home Control", domStyles: {"font-weight": "bold"}},
+			]},
+			{kind: "Button", className: "enyo-button-dark", caption: "Sign Out", onclick: "backHandler"},
 		]},
 		{name: "slidingPane", kind: "SlidingPane", flex: 1, onSelectView: "slidingSelected", components: [
 			{name: "panelRooms", width: "250px", components: [
