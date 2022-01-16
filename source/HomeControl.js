@@ -9,6 +9,7 @@ enyo.kind({
 	online: false,
 	layoutData: null,
 	selectedRoom: null,
+	roomChanged: false,
 	accessoryData: null,
 	selectedLight: null,
 	components: [
@@ -66,12 +67,13 @@ enyo.kind({
 				]}
 			]},
 			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [
+								  
 				{name: "headerDetail", kind: "Header", content: "Nothing Selected", domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
-				{kind: "VFlexBox", flex: 2, pack: "center", components: [
-					{w: "fill", domStyles: {"text-align": "center"}, components: [
-						{kind: "Image", flex:1, name: "imageDetail", src: "icons/icon-256x256.png", onclick: "lightControlClick", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
-					]},
-					{w: "fill", name: "captionDetail", content: "Home Control", domStyles: {"text-align": "center", "margin-left": "100px", "margin-right": "100px"}}
+				{kind: "Pane", name:"paneControl", flex:2, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, components: [
+					{kind: "Controller.Default", name: "controllerDefault"},
+					{kind: "Controller.Lightbulb", name: "controllerLightbulb"},
+					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor"},
+					{kind: "Controller.GarageDoor", name: "controllerGarageDoor"}
 				]},
 				{kind: "Toolbar", components: [
 					{kind: "GrabButton"}
@@ -129,7 +131,13 @@ enyo.kind({
 				if (isRowSelected) {
 					this.$.roomListContainer.applyStyle("background-color", "dimgray");
 					this.$.roomListContainer.applyStyle("color", "white");
-					this.showAccessoryController(record.uniqueId, record.caption, "Room");
+					if (this.roomChanged) {
+						enyo.log("refreshing room list because of selection change");
+						this.roomChanged = false;
+						this.showAccessoryController(record.uniqueId, record.caption, "Room");
+					} else {
+						enyo.log("refreshing room list because of backgorund sync");
+					}
 					//Load the light list for the selected room
 					enyo.log("Get accessory data for room: " + record.uniqueId);
 					this.lightData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueId, true);
@@ -144,9 +152,12 @@ enyo.kind({
 	},
 	roomClick: function(inSender, inEvent) {
 		enyo.log("Room clicked on row: " + inEvent.rowIndex);
-		this.$.selectedRoom = inEvent.rowIndex;
-		this.$.selectedLight = null;
-		this.$.roomList.select(inEvent.rowIndex); //OR: this.$.roomList.refresh();
+		if (this.$.selectedRoom != inEvent.rowIndex) {
+			this.roomChanged = true;
+			this.$.selectedRoom = inEvent.rowIndex;
+			this.$.selectedLight = null;
+			this.$.roomList.select(inEvent.rowIndex); //OR: this.$.roomList.refresh();
+		}
 	},
 	renderLightRow: function(inSender, inIndex) {
 		if (this.lightData && this.lightData.length > 0) {
@@ -159,7 +170,7 @@ enyo.kind({
 					this.$.lightListContainer.applyStyle("background-color", "dimgray");
 					this.$.lightListContainer.applyStyle("color", "white");
 					enyo.log("Selected Item: " + JSON.stringify(record));
-					this.showAccessoryController(record.uniqueId, record.uniqueId, "Light");
+					this.showAccessoryController(record.uniqueId, record.caption, record.type);
 				} else {
 					this.$.lightListContainer.applyStyle("background-color", null);
 					this.$.lightListContainer.applyStyle("color", null);
@@ -180,15 +191,21 @@ enyo.kind({
 	},
 	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType) {
 		switch(accessoryType.toLowerCase()) {
-			case "room":
+			case "lightbulb":
 				this.$.headerDetail.setContent(accessoryCaption);
-				this.$.imageDetail.setSrc("icons/icon-256x256.png");
-				this.$.captionDetail.setContent("Home Control");
+				this.$.paneControl.selectViewByName("controllerLightbulb");
+				break;
+			case "temperaturesensor":
+				this.$.headerDetail.setContent(accessoryCaption);
+				this.$.paneControl.selectViewByName("controllerTemperatureSensor");
+				break;
+			case "garagedooropener":
+				this.$.headerDetail.setContent(accessoryCaption);
+				this.$.paneControl.selectViewByName("controllerGarageDoor");
 				break;
 			default:
 				this.$.headerDetail.setContent(accessoryCaption);
-				this.$.imageDetail.setSrc("images/lightbulb-off.png");
-				this.$.captionDetail.setContent("Light Bulb Control");
+				this.$.paneControl.selectViewByName("controllerDefault");
 				break;
 		}
 	},
