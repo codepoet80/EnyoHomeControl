@@ -6,6 +6,7 @@ enyo.kind({
 	username: null,
 	password: null,
 	server: null,
+	online: false,
 	layoutData: null,
 	selectedRoom: null,
 	accessoryData: null,
@@ -43,7 +44,10 @@ enyo.kind({
 				]}
 			]},
 			{name: "panelLights", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
-				{name: "headerLights", kind: "Header", content: "Lights", domStyles: {"font-weight": "bold"}},
+				{name: "headerLights", kind: "Header", components: [
+					{w: "fill", content:"Lights", domStyles: {"font-weight": "bold"}},
+					{kind: "Image", flex:1, name: "spinnerLights", src: "images/spinner.gif", domStyles: {width: "20px"}},					
+				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "lightList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderLightRow", components: [
 						{kind: "Item", className: "item", onclick: "lightClick", /*Xonmousedown: "lightClick",*/ components: [
@@ -61,7 +65,7 @@ enyo.kind({
 				]}
 			]},
 			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [
-				{name: "headerDetail", kind: "Header", domStyles: {"font-weight": "bold"}, content: "Nothing Selected", domStyles: {overflow: "hidden", "text-overflow": "ellipsis"}},
+				{name: "headerDetail", kind: "Header", content: "Nothing Selected", domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
 				{kind: "VFlexBox", flex: 2, pack: "center", components: [
 					{w: "fill", domStyles: {"text-align": "center"}, components: [
 						{kind: "Image", flex:1, name: "imageDetail", src: "icons/icon-256x256.png", onclick: "lightControlClick", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
@@ -96,13 +100,24 @@ enyo.kind({
 		
 		//Login and Load Home Layout
 		this.homeHelper.LoadHomeData(this, this.server, this.username, this.password, this.homeDataReady);
+		window.setInterval(function() {
+			enyo.log("timer fired: " + this.online)
+			if (this.online) {
+				this.$.spinnerLights.applyStyle("display", "inline");
+				this.homeHelper.UpdateAccessoryDetails(this, this.lightDataUpdated)
+			}
+		}.bind(this), 10000);
 	},
 	homeDataReady: function(self) {
+		self.online = true;
 		enyo.log("Home data is ready for: " + self.name);
 		self.layoutData = self.homeHelper.GetHomeLayout();
 		self.$.spinnerRoom.applyStyle("display", "none");
 		//enyo.log(JSON.stringify(self.layoutData));
 		self.$.roomList.refresh();
+
+		enyo.log("Calling for updated accessory data on this: " + self.name);
+		self.homeHelper.UpdateAccessoryDetails(self, self.lightDataUpdated);
 	},
 	renderRoomRow: function(inSender, inIndex) {
 		if (this.layoutData && this.layoutData.length > 0) {
@@ -113,10 +128,10 @@ enyo.kind({
 				if (isRowSelected) {
 					this.$.roomListContainer.applyStyle("background-color", "dimgray");
 					this.$.roomListContainer.applyStyle("color", "white");
-					this.showAccessoryController(record.uniqueid, record.caption, "Room");
+					this.showAccessoryController(record.uniqueId, record.caption, "Room");
 					//Load the light list for the selected room
-					enyo.log("Get accessory data for room: " + record.uniqueid);
-					this.lightData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueid, true);
+					enyo.log("Get accessory data for room: " + record.uniqueId);
+					this.lightData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueId, true);
 					this.$.lightList.refresh();
 				} else {
 					this.$.roomListContainer.applyStyle("background-color", null);
@@ -136,13 +151,14 @@ enyo.kind({
 		if (this.lightData && this.lightData.length > 0) {
 			var record = this.lightData[inIndex];
 			if (record) {
-				this.$.lightCaption.setContent(record.uniqueid);
+				this.$.lightCaption.setContent(record.caption || record.uniqueId);
 				this.$.lightType.setContent(record.type);
 				var isRowSelected = (inIndex == this.$.selectedLight);
 				if (isRowSelected) {
 					this.$.lightListContainer.applyStyle("background-color", "dimgray");
 					this.$.lightListContainer.applyStyle("color", "white");
-					this.showAccessoryController(record.uniqueid, record.uniqueid, "Light");
+					enyo.log("Selected Item: " + JSON.stringify(record));
+					this.showAccessoryController(record.uniqueId, record.uniqueId, "Light");
 				} else {
 					this.$.lightListContainer.applyStyle("background-color", null);
 					this.$.lightListContainer.applyStyle("color", null);
@@ -155,6 +171,11 @@ enyo.kind({
 		enyo.log("Light clicked on row: " + inEvent.rowIndex);
 		this.$.selectedLight = inEvent.rowIndex;
 		this.$.lightList.select(inEvent.rowIndex);	//OR: this.$.roomList.refresh();
+	},
+	lightDataUpdated: function(self) {
+		enyo.log("Accessories updated on: " + self.name);
+		self.$.spinnerLights.applyStyle("display", "none");
+		self.$.roomList.refresh();
 	},
 	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType) {
 		switch(accessoryType.toLowerCase()) {
