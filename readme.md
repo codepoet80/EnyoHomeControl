@@ -1,6 +1,6 @@
 # Enyo Home Control
 
-![App Icon](icons\icon.png)
+![App Icon](icons/icon.png)
 
 Currently supported back-ends:
 
