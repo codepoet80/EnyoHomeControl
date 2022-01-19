@@ -1,5 +1,16 @@
 # Enyo Home Control
 
+![App Icon](icon.png)
+
+Currently supported back-ends:
+
++ Homebridge
+
+Planned support:
+
++ Hoobs
++ Home Assistant
+
 ## What is This?
 
 This is home automation app for the defunct mobile webOS platform, made by Palm and later acquired by HP. It runs on devices like the Palm Pre or Pixi, or the HP
