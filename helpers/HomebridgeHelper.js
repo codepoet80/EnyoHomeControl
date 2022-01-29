@@ -34,30 +34,14 @@ enyo.kind({
             currentHomebridgeApiUrl = currentHomebridgeApiUrl.replace("homebridge.local", server);
         enyo.log("Homebridge Helper is trying to get data from server " + currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
 
-        this.sender = sender;
-
         if (successHandler)
             this.OnConnectHomeReady = successHandler.bind(this);
         if (failureHandler)
             this.OnConnectHomeFailure = failureHandler.bind(this);
 
+        this.$.doLogin.setProperty("originalSender", sender); //make sure the webservice knows who to call back on
         this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});
     },
-    /* //Deprecated
-    GetHomeData: function() {   //All the data in the home
-        var normalizedData = [];
-		for (var i=0;i<this.homeData.length;i++) {
-			if (this.homeData[i].services) {	//this is a room!
-				normalizedData.push({caption: data[i].name, type: "Room"});
-				var services = this.homeData[i].services;
-				for (var j=0;j<services.length;j++) {
-					normalizedData.push({caption: services[j].uniqueId, type: "Accessory"});
-				}
-			}
-		}
-        return normalizedData;
-    },
-    */
     GetHomeLayout: function() { //Just the layout of the home (eg: rooms or zones)
         var normalizedData = [];
 		for (var i=0;i<this.homeData.length;i++) {
@@ -89,7 +73,6 @@ enyo.kind({
     },
     UpdateAccessories: function(sender, successHandler, failureHandler) {    
         enyo.log("Updating accessories for sender: " + sender.name);
-        this.sender = sender;
         if (successHandler)
             this.OnUpdateAccessoriesReady = successHandler.bind(this);
         if (failureHandler)
@@ -103,6 +86,7 @@ enyo.kind({
                     if (services[j].uniqueId) {
                         //enyo.log("Updating accessory: " + services[j].uniqueId);
                         this.$.getAccessory.setUrl(currentHomebridgeApiUrl + "/accessories/" + services[j].uniqueId);
+                        this.$.getAccessory.setProperty("originalSender", sender);
                         this.callServiceWithLatestProps(this.$.getAccessory, null, {"Authorization": "Bearer " + this.bearerToken});
                         this.refreshCount++;
                     }
@@ -111,8 +95,7 @@ enyo.kind({
         }
     },
     SetAccessoryValue: function(sender, uniqueId, setting, value, successHandler, failureHandler) {
-        enyo.log("setting accessory value for " + uniqueId);
-        this.sender = sender;
+        enyo.log("setting accessory value on " + uniqueId + " for sender: " + sender.name);
         if (successHandler)
             this.OnSetAccessoryReady = successHandler.bind(this);
         if (failureHandler)
@@ -130,6 +113,7 @@ enyo.kind({
                 break;
         }
         this.$.setAccessory.setUrl(currentHomebridgeApiUrl + "/accessories/" + uniqueId);
+        this.$.setAccessory.setProperty("originalSender", sender);
         this.callServiceWithLatestProps(this.$.setAccessory, putData, {"Authorization": "Bearer " + this.bearerToken});
     },
     //#endregion
@@ -172,10 +156,14 @@ enyo.kind({
     },
     loginSuccess: function(inSender, inResponse, inRequest)  {
 		enyo.log("Homebridge Helper got login response: " + JSON.stringify(inResponse));	
+        //EnumerateObject(inSender);
+
 		if (inResponse && inResponse.access_token) {
 			this.bearerToken = inResponse.access_token;
-			//enyo.log("Homebridge Helper login success, token is: " + this.bearerToken);
-			this.getHomeData(inSender);
+            var originalSender = inSender.getProperty("originalSender");
+            if (originalSender)
+                enyo.log("Done logging in for original sender: " + originalSender.name + " token is: " + this.bearerToken);
+			this.getHomeData(inSender, originalSender);
 		} else {
 			this.loginFailure(inSender, inResponse, inRequest);
 		}
@@ -183,7 +171,8 @@ enyo.kind({
     loginFailure: function(inSender, inResponse, inRequest) {
         enyo.error("Homebridge Helper hit an error during login");
 	},
-    getHomeData: function(inSender) {
+    getHomeData: function(inSender, originalSender) {
+        this.$.getLayout.setProperty("originalSender", originalSender);
         this.callServiceWithLatestProps(this.$.getLayout, null, {"Authorization": "Bearer " + this.bearerToken})
 	},
     buildNormalizedAccessory: function(accessory, data) {
@@ -213,7 +202,10 @@ enyo.kind({
                     inResponse[i].uniqueId = useid;
                 }
             }
-            this.OnConnectHomeReady(this.sender);
+            var originalSender = inSender.getProperty("originalSender");
+            if (originalSender)
+                enyo.log("Done getting layout for original sender: " + originalSender.name);
+            this.OnConnectHomeReady(originalSender);
         } else {
             this.$.getLayoutFailure(inSender, inResponse, inResponse);
         }
@@ -238,10 +230,18 @@ enyo.kind({
             }
         }
         if (this.refreshCount <= 0) {
-            enyo.log("Done getting accessories for sender: " + this.sender.name);
-            this.OnUpdateAccessoriesReady(this.sender);
+            var originalSender = inSender.getProperty("originalSender");
+            if (originalSender)
+                enyo.log("Done getting accessories for original sender: " + originalSender.name);
+            this.OnUpdateAccessoriesReady(originalSender);
         }
             
+    },
+    setAccessorySuccess: function(inSender, inResponse, inRequest) {
+        var originalSender = inSender.getProperty("originalSender");
+        if (originalSender)
+            enyo.log("Done setting accessory for original sender: " + originalSender.name);
+        this.OnSetAccessoryReady(originalSender);
     },
     uniqueId: function() {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -250,3 +250,17 @@ enyo.kind({
     }
     //#endregion
 });
+
+EnumerateObject = function(objectToEnumerate) {
+    for (var key in objectToEnumerate) {
+        enyo.log("=== prop:" + key + ": " + objectToEnumerate[key]);
+        if (objectToEnumerate.hasOwnProperty(key)) {
+            var obj = objectToEnumerate[key];
+            for (var prop in obj) {
+                if (obj.hasOwnProperty(prop)) {
+                    enyo.log("...... sub: " + prop + " = " + obj[prop])
+                }
+            }
+        }
+    }
+}
