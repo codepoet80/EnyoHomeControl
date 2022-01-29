@@ -21,7 +21,9 @@ enyo.kind({
         OnDataLoadReady: function(sender) { enyo.warn("Homebridge Helper loaded data, but no one is listening to the event!"); },
         OnDataLoadFailure: function(sender) { enyo.error("Homebridge Helper could not logon or load data from Homebridge!"); },
         OnDataUpdateReady: function(sender) { enyo.warn("Homebridge Helper updated data, but no one is listening to the event!"); },
-        OnDataUpdateFailure: function(sender) { enyo.error("Homebridge Helper could not update data from Homebridge!"); }
+        OnDataUpdateFailure: function(sender) { enyo.error("Homebridge Helper could not update data from Homebridge!"); },
+        OnAccessorySetReady: function(sender) { enyo.warn("Homebridge Helper set an accessory on Homebridge, but no one is listening to the event!"); },
+        OnAccessorySetFailure: function(sender) { enyo.error("Homebridge Helper could not set an accessory on Homebridge!"); }
     },
     create: function() {
         this.inherited(arguments);
@@ -70,17 +72,15 @@ enyo.kind({
                 if (this.homeData[i].uniqueId == roomId) {
                     var services = this.homeData[i].services;
                     for (var j=0;j<services.length;j++) {
-                        normalizedData.push({caption: services[j].serviceName, type: services[j].type, uniqueId: services[j].uniqueId, debugData: services[j]});
+                        normalizedData.push({caption: services[j].serviceName, type: services[j].type, uniqueId: services[j].uniqueId, state: Boolean(services[j].values.On), debugData: services[j]});
                     }
                 }
 			}
 		}
         return normalizedData;
     },
-    UpdateAccessoryDetails: function(sender, successHandler, failureHandler) {    //Details for a specific accessory
-        
+    UpdateAccessoryDetails: function(sender, successHandler, failureHandler) {    //Details for a specific accessory       
         this.sender = sender;
-
         if (successHandler)
             this.OnDataUpdateReady = successHandler.bind(this);
         if (failureHandler)
@@ -100,6 +100,29 @@ enyo.kind({
                 }
             }
         }
+    },
+    SetAccessoryValue: function(sender, uniqueId, setting, value, successHandler, failureHandler) {
+        enyo.log("setting accessory value for " + uniqueId);
+        this.sender = sender;
+        if (successHandler)
+            this.OnAccessorySetReady = successHandler.bind(this);
+        if (failureHandler)
+            this.OnAccessorySetFailure = failureHandler.bind(this);
+
+        //Adapt normalized data
+        switch (setting) {
+            default:
+                var putData = {
+                    "characteristicType": "On",
+                    "value": "0"
+                }
+                if (value)
+                    putData.value = "1";
+                break;
+        }
+        this.$.setAccessory.setUrl(currentHomebridgeApiUrl + "/accessories/" + uniqueId);
+        enyo.log("url: " + this.$.setAccessory.url)
+        this.callServiceWithLatestProps(this.$.setAccessory, putData, {"Authorization": "Bearer " + this.bearerToken});
     },
     //#endregion
 
@@ -125,6 +148,12 @@ enyo.kind({
             onSuccess: "getAccessorySuccess", 
             onFailure: "getAccessoryFailure" 
         },
+        { kind: "WebService", name:"setAccessory", url: defaultHomebridgeApiUrl + "accessories/",   //to be filled in later
+            method: "PUT",
+            headers: { "Authorization": "Bearer " },    //to be filled in later
+            onSuccess: "setAccessorySuccess",
+            onFailure: "setAccessoryFailure"
+        }
     ],
     callServiceWithLatestProps: function(service, params, headers) {    //Solve a race condition where service properties aren't updated
         service.setUrl(service.url.replace(defaultHomebridgeApiUrl, currentHomebridgeApiUrl));

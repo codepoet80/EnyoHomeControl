@@ -12,6 +12,7 @@ enyo.kind({
 	roomChanged: false,
 	accessoryData: null,
 	selectedLight: null,
+	currentAccessory: null,
 	components: [
 		{kind: "Helpers.Homebridge", name: "myHomebridge" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
@@ -100,16 +101,17 @@ enyo.kind({
 		this.server = "homebridge.jonandnic.com";
 		//TODO: helper type (support for multiple back-ends)
 		this.homeHelper = this.$.myHomebridge;
+		this.$.controllerLightbulb.CurrentHelper = this.homeHelper;
 		
 		//Login and Load Home Layout
 		this.homeHelper.LoadHomeData(this, this.server, this.username, this.password, this.homeDataReady);
-		window.setInterval(function() {
+		/*window.setInterval(function() {
 			enyo.log("timer fired: " + this.online)
 			if (this.online) {
 				this.$.spinnerLights.applyStyle("display", "inline");
 				this.homeHelper.UpdateAccessoryDetails(this, this.lightDataUpdated)
 			}
-		}.bind(this), 10000);
+		}.bind(this), 10000);*/
 	},
 	homeDataReady: function(self) {
 		self.online = true;
@@ -170,7 +172,7 @@ enyo.kind({
 					this.$.lightListContainer.applyStyle("background-color", "dimgray");
 					this.$.lightListContainer.applyStyle("color", "white");
 					enyo.log("Selected Item: " + JSON.stringify(record));
-					this.showAccessoryController(record.uniqueId, record.caption, record.type);
+					this.showAccessoryController(record.uniqueId, record.caption, record.type, record.state, record);
 				} else {
 					this.$.lightListContainer.applyStyle("background-color", null);
 					this.$.lightListContainer.applyStyle("color", null);
@@ -189,11 +191,20 @@ enyo.kind({
 		self.$.spinnerLights.applyStyle("display", "none");
 		self.$.roomList.refresh();
 	},
-	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType) {
+	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType, accessoryState, accessoryData) {
+		/*this.$.currentAccessory = {
+			uniqueId: accessoryId,
+			data: accessoryData
+		};*/
 		switch(accessoryType.toLowerCase()) {
 			case "lightbulb":
 				this.$.headerDetail.setContent(accessoryCaption);
 				this.$.paneControl.selectViewByName("controllerLightbulb");
+				this.$.controllerLightbulb.CurrentAccessory = {
+					uniqueId: accessoryId,
+					data: accessoryData
+				};
+				this.$.controllerLightbulb.SetState(accessoryState);
 				break;
 			case "temperaturesensor":
 				this.$.headerDetail.setContent(accessoryCaption);
@@ -210,6 +221,7 @@ enyo.kind({
 		}
 	},
 	lightControlClick: function(inSender, inEvent) {
+
 		if (this.$.imageDetail.src == "images/lightbulb-on.png")
 			this.$.imageDetail.setSrc("images/lightbulb-off.png");
 		else
