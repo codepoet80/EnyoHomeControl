@@ -1,4 +1,6 @@
-﻿name = "homecontrol",
+﻿name = "homecontrol";
+updateRate = 10000;
+updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
 	kind: enyo.VFlexBox,
@@ -54,10 +56,10 @@ enyo.kind({
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "lightList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderLightRow", components: [
 						{kind: "Item", className: "item", onclick: "lightClick", /*Xonmousedown: "lightClick",*/ components: [
-							{w: "fill", name:"lightListContainer", domStyles: {margin: "-12px", padding: "12px"}, components: [
+							{w: "fill", name:"lightListContainer", domStyles: {margin: "-12px", padding: "12px", "align-items": "center"}, components: [
 								{kind: "HFlexBox", components: [
-									{name: "lightCaption", flex: 2, domStyles: {overflow: "hidden", "text-overflow": "ellipsis"} },
-									{w: "fill", flex: 1, name: "lightType", content:"Light", domStyles: {"text-align": "right"}}
+									{kind: "CheckBox", flex: 1, name: "accessoryIcon", content:" ", domStyles: { width: "30px", "vertical-align": "middle"} },
+									{name: "lightCaption", flex: 2, domStyles: {overflow: "hidden", "padding-top": "10px", "padding-left": "8px", "text-overflow": "ellipsis"} },									
 								]}	
 							]}
 						]}
@@ -104,14 +106,17 @@ enyo.kind({
 		this.$.controllerLightbulb.CurrentHelper = this.homeHelper;
 		
 		//Login and Load Home Layout
-		this.homeHelper.LoadHomeData(this, this.server, this.username, this.password, this.homeDataReady);
-		/*window.setInterval(function() {
-			enyo.log("timer fired: " + this.online)
-			if (this.online) {
-				this.$.spinnerLights.applyStyle("display", "inline");
-				this.homeHelper.UpdateAccessoryDetails(this, this.lightDataUpdated)
-			}
-		}.bind(this), 10000);*/
+		this.homeHelper.ConnectHome(this, this.server, this.username, this.password, this.homeDataReady);
+		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
+	},
+	periodicUpdate: function() {
+		enyo.log("timer fired, online: " + this.online);
+		window.clearInterval(updateInt);
+		if (this.online) {
+			this.$.spinnerLights.applyStyle("display", "inline");
+			this.homeHelper.UpdateAccessories(this, this.lightDataUpdated)
+		}
+		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
 	homeDataReady: function(self) {
 		self.online = true;
@@ -122,7 +127,7 @@ enyo.kind({
 		self.$.roomList.refresh();
 
 		enyo.log("Calling for updated accessory data on this: " + self.name);
-		self.homeHelper.UpdateAccessoryDetails(self, self.lightDataUpdated);
+		self.homeHelper.UpdateAccessories(self, self.lightDataUpdated);
 	},
 	renderRoomRow: function(inSender, inIndex) {
 		if (this.layoutData && this.layoutData.length > 0) {
@@ -138,7 +143,7 @@ enyo.kind({
 						this.roomChanged = false;
 						this.showAccessoryController(record.uniqueId, record.caption, "Room");
 					} else {
-						enyo.log("refreshing room list because of backgorund sync");
+						enyo.log("refreshing room list because of background sync");
 					}
 					//Load the light list for the selected room
 					enyo.log("Get accessory data for room: " + record.uniqueId);
@@ -166,12 +171,14 @@ enyo.kind({
 			var record = this.lightData[inIndex];
 			if (record) {
 				this.$.lightCaption.setContent(record.caption || record.uniqueId);
-				this.$.lightType.setContent(record.type);
+				this.$.accessoryIcon.removeClass("true");	//remove previous state so it can be refreshed
+				this.$.accessoryIcon.addClass(record.type);
+				this.$.accessoryIcon.addClass(record.state);
 				var isRowSelected = (inIndex == this.$.selectedLight);
 				if (isRowSelected) {
 					this.$.lightListContainer.applyStyle("background-color", "dimgray");
 					this.$.lightListContainer.applyStyle("color", "white");
-					enyo.log("Selected Item: " + JSON.stringify(record));
+					//enyo.log("Selected Item: " + JSON.stringify(record));
 					this.showAccessoryController(record.uniqueId, record.caption, record.type, record.state, record);
 				} else {
 					this.$.lightListContainer.applyStyle("background-color", null);
@@ -192,10 +199,6 @@ enyo.kind({
 		self.$.roomList.refresh();
 	},
 	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType, accessoryState, accessoryData) {
-		/*this.$.currentAccessory = {
-			uniqueId: accessoryId,
-			data: accessoryData
-		};*/
 		switch(accessoryType.toLowerCase()) {
 			case "lightbulb":
 				this.$.headerDetail.setContent(accessoryCaption);

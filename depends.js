@@ -5,6 +5,6 @@
 	"source/ControllerTemperatureSensor.js",
 	"source/ControllerGarageDoor.js",
 	"css/HomeControl.css",
-	"helpers/Homebridge.js",
+	"helpers/HomebridgeHelper.js",
 	"helpers/Updater.js"
 );

@@ -1,1 +1,6 @@
-﻿
+﻿.lightbulb {
+    background-image: url("../images/lightbulb-icon.png");
+}
+.true {
+    background-image: url("../images/lightbulb-icon-on.png") !important;
+}

@@ -18,18 +18,18 @@ enyo.kind({
     //#region Public
     //  This stuff must be implemented to support the UI, but the details of the implementation are up to you
     published: {
-        OnDataLoadReady: function(sender) { enyo.warn("Homebridge Helper loaded data, but no one is listening to the event!"); },
-        OnDataLoadFailure: function(sender) { enyo.error("Homebridge Helper could not logon or load data from Homebridge!"); },
-        OnDataUpdateReady: function(sender) { enyo.warn("Homebridge Helper updated data, but no one is listening to the event!"); },
-        OnDataUpdateFailure: function(sender) { enyo.error("Homebridge Helper could not update data from Homebridge!"); },
-        OnAccessorySetReady: function(sender) { enyo.warn("Homebridge Helper set an accessory on Homebridge, but no one is listening to the event!"); },
-        OnAccessorySetFailure: function(sender) { enyo.error("Homebridge Helper could not set an accessory on Homebridge!"); }
+        OnConnectHomeReady: function(sender) { enyo.warn("Homebridge Helper loaded data, but no one is listening to the event!"); },
+        OnConnectHomeFailure: function(sender) { enyo.error("Homebridge Helper could not logon or load data from Homebridge!"); },
+        OnUpdateAccessoriesReady: function(sender) { enyo.warn("Homebridge Helper updated data, but no one is listening to the event!"); },
+        OnUpdateAccessoriesFailure: function(sender) { enyo.error("Homebridge Helper could not update data from Homebridge!"); },
+        OnSetAccessoryReady: function(sender) { enyo.warn("Homebridge Helper set an accessory on Homebridge, but no one is listening to the event!"); },
+        OnSetAccessoryFailure: function(sender) { enyo.error("Homebridge Helper could not set an accessory on Homebridge!"); }
     },
     create: function() {
         this.inherited(arguments);
         enyo.log("Homebridge Helper created as: " + this.name);
     },
-    LoadHomeData: function(sender, server, user, pass, successHandler, failureHandler) {
+    ConnectHome: function(sender, server, user, pass, successHandler, failureHandler) {
         if (server)
             currentHomebridgeApiUrl = currentHomebridgeApiUrl.replace("homebridge.local", server);
         enyo.log("Homebridge Helper is trying to get data from server " + currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
@@ -37,12 +37,13 @@ enyo.kind({
         this.sender = sender;
 
         if (successHandler)
-            this.OnDataLoadReady = successHandler.bind(this);
+            this.OnConnectHomeReady = successHandler.bind(this);
         if (failureHandler)
-            this.OnDataLoadFailure = failureHandler.bind(this);
+            this.OnConnectHomeFailure = failureHandler.bind(this);
 
         this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});
     },
+    /* //Deprecated
     GetHomeData: function() {   //All the data in the home
         var normalizedData = [];
 		for (var i=0;i<this.homeData.length;i++) {
@@ -56,6 +57,7 @@ enyo.kind({
 		}
         return normalizedData;
     },
+    */
     GetHomeLayout: function() { //Just the layout of the home (eg: rooms or zones)
         var normalizedData = [];
 		for (var i=0;i<this.homeData.length;i++) {
@@ -67,24 +69,31 @@ enyo.kind({
     },
     GetAccessoryDataForRoom: function(roomId, changeable) {   //Just the accessories in a given room
         var normalizedData = [];
+        //enyo.log("Home data currently: " + JSON.stringify(this.homeData));
 		for (var i=0;i<this.homeData.length;i++) {
-			if (this.homeData[i].services) {	//this is a room!
+			if (this.homeData[i].services) {	//we're in a room!
                 if (this.homeData[i].uniqueId == roomId) {
                     var services = this.homeData[i].services;
                     for (var j=0;j<services.length;j++) {
-                        normalizedData.push({caption: services[j].serviceName, type: services[j].type, uniqueId: services[j].uniqueId, state: Boolean(services[j].values.On), debugData: services[j]});
+                        //Here's where we normalize the accessory data (see interface.md)
+                        var thisAccessory = {
+                            uniqueId: services[j].uniqueId,
+                        }
+                        thisAccessory = this.buildNormalizedAccessory(thisAccessory, services[j]);
+                        normalizedData.push(thisAccessory);
                     }
                 }
 			}
 		}
         return normalizedData;
     },
-    UpdateAccessoryDetails: function(sender, successHandler, failureHandler) {    //Details for a specific accessory       
+    UpdateAccessories: function(sender, successHandler, failureHandler) {    
+        enyo.log("Updating accessories for sender: " + sender.name);
         this.sender = sender;
         if (successHandler)
-            this.OnDataUpdateReady = successHandler.bind(this);
+            this.OnUpdateAccessoriesReady = successHandler.bind(this);
         if (failureHandler)
-            this.OnDataUpdateFailure = failureHandler.bind(this);
+            this.OnUpdateAccessoriesFailure = failureHandler.bind(this);
 
         this.refreshCount = 0;
         for (var i=0;i<this.homeData.length;i++) {
@@ -105,9 +114,9 @@ enyo.kind({
         enyo.log("setting accessory value for " + uniqueId);
         this.sender = sender;
         if (successHandler)
-            this.OnAccessorySetReady = successHandler.bind(this);
+            this.OnSetAccessoryReady = successHandler.bind(this);
         if (failureHandler)
-            this.OnAccessorySetFailure = failureHandler.bind(this);
+            this.OnSetAccessoryFailure = failureHandler.bind(this);
 
         //Adapt normalized data
         switch (setting) {
@@ -121,7 +130,6 @@ enyo.kind({
                 break;
         }
         this.$.setAccessory.setUrl(currentHomebridgeApiUrl + "/accessories/" + uniqueId);
-        enyo.log("url: " + this.$.setAccessory.url)
         this.callServiceWithLatestProps(this.$.setAccessory, putData, {"Authorization": "Bearer " + this.bearerToken});
     },
     //#endregion
@@ -166,7 +174,7 @@ enyo.kind({
 		enyo.log("Homebridge Helper got login response: " + JSON.stringify(inResponse));	
 		if (inResponse && inResponse.access_token) {
 			this.bearerToken = inResponse.access_token;
-			enyo.log("Homebridge Helper login success, token is: " + this.bearerToken);
+			//enyo.log("Homebridge Helper login success, token is: " + this.bearerToken);
 			this.getHomeData(inSender);
 		} else {
 			this.loginFailure(inSender, inResponse, inRequest);
@@ -178,9 +186,26 @@ enyo.kind({
     getHomeData: function(inSender) {
         this.callServiceWithLatestProps(this.$.getLayout, null, {"Authorization": "Bearer " + this.bearerToken})
 	},
+    buildNormalizedAccessory: function(accessory, data) {
+        if (data.type) {
+            switch(data.type.toLowerCase()){
+                case "lightbulb":
+                    accessory.caption = data.serviceName
+                    accessory.type = "lightbulb";
+                    accessory.state = Boolean(data.values.On);
+                    accessory.amount = data.values.Brightness;
+                    accessory.condition = null;
+                    break;
+                default:
+                    accessory.type = "unknown";
+            }
+        }
+        accessory.data = data;
+        return accessory
+    },
     getLayoutSuccess: function(inSender, inResponse, inRequest) {
         if (inResponse) { //and its an object
-            enyo.log("Homebridge Helper got home layout response: " + inResponse);
+            //enyo.log("Homebridge Helper got home layout response: " + inResponse);
             this.homeData = inResponse;
             for (var i=0;i<inResponse.length;i++){
                 if (inResponse[i].services) {
@@ -188,7 +213,7 @@ enyo.kind({
                     inResponse[i].uniqueId = useid;
                 }
             }
-            this.OnDataLoadReady(this.sender);
+            this.OnConnectHomeReady(this.sender);
         } else {
             this.$.getLayoutFailure(inSender, inResponse, inResponse);
         }
@@ -214,7 +239,7 @@ enyo.kind({
         }
         if (this.refreshCount <= 0) {
             enyo.log("Done getting accessories for sender: " + this.sender.name);
-            this.OnDataUpdateReady(this.sender);
+            this.OnUpdateAccessoriesReady(this.sender);
         }
             
     },
