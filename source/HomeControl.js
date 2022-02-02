@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 100000;
+updateRate = 20000;
 updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
@@ -45,7 +45,7 @@ enyo.kind({
 				]},
 				{kind: "Toolbar", components: [
 					{kind: "GrabButton"},
-					{caption: "Update", onclick: "doUpdateRooms"}
+					{caption: "Update", onclick: "periodicUpdate"}
 				]}
 			]},
 			{name: "panelAccessories", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
@@ -114,7 +114,7 @@ enyo.kind({
 		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
 	periodicUpdate: function() {
-		enyo.log("timer fired, online: " + this.online);
+		enyo.log("Update fired, online: " + this.online);
 		window.clearInterval(updateInt);
 		if (this.online) {
 			this.$.spinnerAccessories.applyStyle("display", "inline");
