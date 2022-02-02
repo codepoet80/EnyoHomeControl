@@ -17,8 +17,8 @@ enyo.kind({
 
 	],
 	create: function() {
-		enyo.warn("Lightbulb Controller created!");
 		this.inherited(arguments);
+		enyo.warn(this.name + " created!");
 	},
 	SetState: function(state) {
 		enyo.log("the lightbulb state should be: " + state)

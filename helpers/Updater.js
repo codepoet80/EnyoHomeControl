@@ -1,40 +1,101 @@
 /*
 Updater Helper - Enyo
- Version 0.1
- Created: 2020
+ Version 0.2
+ Created: 2022
  Author: Jonathan Wise
  License: MIT
  Description: A helper to check for and get updates from App Museum II web service.
     Does not require App Museum to be installed, but does require internet access, and Preware to do the actual install.
  Source: Find the latest version of this library and clean samples of how to use it on GitHub:
-    https://github.com/codepoet80/webos-catalog-frontend/tree/main/Examples
+    https://github.com/codepoet80/webos-common
 */
+
+//** Note: If you synced this file from a common repository, local edits may be over-written! */
 
 enyo.kind({
     name: "Helpers.Updater",
     kind: "Control",
+    sender: null,
     published: {
-        lastUpdateResponse: null,
+        OnUpdateResponse: function(sender, message) { this.PromptUserForUpdate(message) },
+        LastUpdateResponse: null,
+        deviceId: null,
+        appName: null
     },
+    
+    create: function() {
+        this.inherited(arguments);
+        enyo.log("Update Helper created.");
+    },
+
+    //#region Public
+    //  You can call these methods from your code
+    CheckForUpdate: function(sender, appName, callBack) {
+        this.sender = sender;
+        if (appName) {
+            this.appName = appName;
+            if (callBack)
+                this.OnUpdateResponse = callBack.bind(this);
+            if (window.location.hostname.indexOf(".media.cryptofs.apps") != -1) {
+                this.$.propertyRequest.call(
+                {
+                    key: "com.palm.properties.nduid"
+                },
+                {
+                    method: "Get"
+                });
+            } else {
+                this.performIdentifiedUpdateCheck(sender);
+            }
+        }
+    },
+
+    PromptUserForUpdate: function(message) {
+        if (this.LastUpdateResponse == null) {
+            enyo.log("Updater Helper: Not prompting user for update when no update has been discovered.");
+        } else {
+            if (!message)
+                message = "An update for this app was found in App Museum II:<br>Do you want to update now?";
+            else
+                message = "An update for this app was found in App Museum II:<br><br>" + message + "<br><br>Do you want to update now?";
+            this.$.updateMsg.setContent(message);
+            this.$.updatePopUp.openAtCenter();
+        }
+    },
+
+    InstallViaPreware: function(app) {
+        this.$.installRequest.call({ id: "org.webosinternals.preware", params: { type: "install", file: app } });
+    },
+    //#endregion
+
+    //#region Private
+    //  These members are used by the public methods and aren't meant to be called directly
     components: [{
             name: "updateServiceCheck",
             kind: "WebService",
-            url: "http://appcatalog.webosarchive.com/WebService/getLatestVersionInfo.php",
+            url: "http://appcatalog.webosarchive.com/WebService/getLatestVersionInfo.php?app=",
             onSuccess: "updateCheckSuccess",
             onFailure: "updateCheckFailure"
         },
         {
-            name: "serviceRequest",
+            name: "installRequest",
             kind: "PalmService",
             service: "palm://com.palm.applicationManager",
             method: "open"
+        },
+        {
+            name: "propertyRequest",
+            kind: "PalmService",
+            service: "palm://com.palm.preferences/systemProperties",
+            onSuccess: "performIdentifiedUpdateCheck",
+            onFailure: "performIdentifiedUpdateCheck"
         },
         {
             kind: "Popup",
             name: "updatePopUp",
             lazy: false,
             layoutKind: "VFlexLayout",
-            style: "width: 80%;height:210px",
+            style: "width: 80%;min-height:288px",
             components: [
                 { content: "<b>Update Available!</b>" },
                 {
@@ -55,46 +116,44 @@ enyo.kind({
             ]
         },
     ],
-    create: function() {
-        this.inherited(arguments);
-        enyo.log("Update Helper created as: " + this.name);
-    },
-    CheckForUpdate: function(appName) {
-        enyo.log("Update Helper is checking for updates...");
-        this.$.updateServiceCheck.call(appName);
-    },
-    openUpdatePopup: function(message) {
-        if (this.lastUpdateResponse == null) {
-            enyo.warn("Updater Helper: Not prompting user for update when no update has been discovered.");
-        } else {
-            if (!message)
-                message = "An update for this app was found in App Museum II. Do you want to update now?";
-            this.$.updateMsg.setContent(message);
-            this.$.updatePopUp.openAtCenter();
+    
+    performIdentifiedUpdateCheck: function(inSender, inResponse) {
+
+        var environment = enyo.fetchDeviceInfo();   //Find some info about the device (could be used for compat checks)
+        var deviceData = navigator.userAgent;
+        if (environment && environment.serialNumber) {
+            this.deviceId = environment.serialNumber;
+            locale = enyo.g11n.currentLocale().getLocale();
+            deviceData = environment.modelName + "/" + environment.platformVersion + "/" + (environment.carrierName || "WiFi") + "/" + locale;
         }
-    },
-    updateConfirmClick: function() {
-        this.$.updatePopUp.close();
-        if (!this.lastUpdateResponse || !this.lastUpdateResponse.downloadURI) {
-            enyo.warn("Updater Helper: Not performing update when no update has been discovered.");
-        } else {
-            enyo.log("Updater Helper doing update for: " + JSON.stringify(this.lastUpdateResponse));
-            this.$.serviceRequest.call({ id: "org.webosinternals.preware", params: { type: "install", file: this.lastUpdateResponse.downloadURI } });
+        else {
+            if (!enyo.getCookie("updater-uuid")) {
+                enyo.setCookie("updater-uuid", this.uniqueId());
+            }
+            this.deviceId = enyo.getCookie("updater-uuid");
         }
+        if (inResponse && inResponse["com.palm.properties.nduid"])
+            this.deviceId = inResponse["com.palm.properties.nduid"];
+
+        var newUrl = this.$.updateServiceCheck.url + this.appName;
+        newUrl = newUrl + "&clientid=" + this.deviceId;
+        newUrl = newUrl + "&device=" + encodeURIComponent(deviceData);
+        
+        enyo.log("Update Helper is checking for updates with URL: " + newUrl);
+        this.$.updateServiceCheck.setUrl(newUrl);
+        this.$.updateServiceCheck.call();
     },
-    updateCancelClick: function() {
-        this.$.updatePopUp.close();
-    },
+
     updateCheckSuccess: function(inSender, inResponse, inRequest) {
         var currVersion = enyo.fetchAppInfo().version;
         enyo.log("Updater Helper found Current version: " + currVersion + ", Update version: " + inResponse.version);
         currVersion = this.getVersionObject(currVersion);
         if (inResponse.version != null) {
-            this.lastUpdateResponse = inResponse;
+            this.LastUpdateResponse = inResponse;
             var museumVersion = this.getVersionObject(inResponse.version);
             if (this.isVersionHigher(currVersion, museumVersion)) {
                 enyo.log("Updater Helper found an update in webOS App Museum II!");
-                this.openUpdatePopup(inResponse.versionNote);
+                this.OnUpdateResponse(this.sender, inResponse.versionNote);
             } else {
                 enyo.log("Updater Helper did not find an update in webOS App Museum II!");
                 inResponse = false;
@@ -103,9 +162,25 @@ enyo.kind({
             enyo.error("Update Helper could not find museum version number");
         }
     },
+
     updateCheckFailure: function(inSender, inResponse, inRequest) {
         enyo.error("Got failure from update check: " + inResponse);
     },
+
+    updateConfirmClick: function() {
+        this.$.updatePopUp.close();
+        if (!this.LastUpdateResponse || !this.LastUpdateResponse.downloadURI) {
+            enyo.warn("Updater Helper: Not performing update when no update has been discovered.");
+        } else {
+            enyo.log("Updater Helper doing update for: " + JSON.stringify(this.LastUpdateResponse));
+            this.InstallViaPreware(this.LastUpdateResponse.downloadURI);
+        }
+    },
+
+    updateCancelClick: function() {
+        this.$.updatePopUp.close();
+    },
+
     //Turn a version string into an object with three independent number values
     getVersionObject: function(versionNum) {
         versionNumParts = versionNum.split(".");
@@ -121,6 +196,7 @@ enyo.kind({
             return versionObject;
         }
     },
+
     //Given a current version and a version to compare, return true or false if the compare version is newer
     isVersionHigher: function(currVersion, compareVersion) {
         if (!currVersion || !compareVersion) {
@@ -136,4 +212,11 @@ enyo.kind({
         }
     },
 
+    uniqueId: function() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+              .toString(16)
+              .substring(1);
+    }
+
+    //#endregion
 });

@@ -12,8 +12,10 @@ enyo.kind({
         OnAccessoryStateChanged: function(sender) { enyo.warn(this.name + " changed accessory state, but no one is listening to the event!"); },
 	},
 	create: function() {
-		enyo.warn(this.name + " created!");
 		this.inherited(arguments);
+		enyo.warn(this.name + " created!");
+		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.4) + "px");
+		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.4) + "px");
 	},
 	SetState: function(state) {	//This is a UI function only, to actually change the accessory value, call the Helper
 		enyo.log(this.name + " is setting " + this.SupportedAccessories[0] + " state to: " + state);

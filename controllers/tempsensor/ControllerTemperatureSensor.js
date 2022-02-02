@@ -14,7 +14,7 @@ enyo.kind({
 
 	],
 	create: function() {
-		enyo.warn("Temperature Sensor Controller created!");
 		this.inherited(arguments);
+		enyo.warn(this.name + " created!");
 	},
 });

@@ -4,6 +4,7 @@ updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
 	kind: enyo.VFlexBox,
+	environment: null,
 	homeHelper: null,
 	username: null,
 	password: null,
@@ -87,11 +88,15 @@ enyo.kind({
 		this.inherited(arguments);
 
 		//Detect environment for appropriate behavior
-		enyo.log("Home Control is starting up on " + window.location.hostname + " as: " + this.name);
-		if (window.location.hostname != ".media.cryptofs.apps.usr.palm.applications.com.jonandnic.enyo.homecontrol") {
-			enyo.warn("webOS environment not detected, assuming a web server!");	
-		} else {
+		this.environment = enyo.fetchDeviceInfo();
+		if (this.environment)
 			this.$.myUpdater.CheckForUpdate("Home Control");
+		if (window.location.hostname && window.location.hostname.indexOf(".media.cryptofs.apps") != -1) {   // Running on webOS
+			enyo.log("webOS environment detected");
+		} else if(window.location.href.indexOf("file:///media/cryptofs") != -1) { // Running on LuneOS
+			enyo.log("LuneOS environment detected");
+		} else {    // Running in a web browser
+			enyo.warn("embedded environment not detected, assuming a web server!");
 		}
 
 		//Load preferences
@@ -162,6 +167,7 @@ enyo.kind({
 	},
 	roomClick: function(inSender, inEvent) {
 		enyo.log("Room clicked on row: " + inEvent.rowIndex);
+		this.selectNextView();
 		if (this.$.selectedRoom != inEvent.rowIndex) {
 			this.roomChanged = true;
 			this.$.selectedRoom = inEvent.rowIndex;
@@ -188,6 +194,7 @@ enyo.kind({
 	},
 	accessoryClick: function(inSender, inEvent) {
 		enyo.log("Accessory click on row: " + inEvent.rowIndex);
+		this.selectNextView();
 		this.$.selectedAccessory = inEvent.rowIndex;
 		this.$.accessoryList.select(inEvent.rowIndex);	//OR: this.$.accessoryList.refresh();
 	},
@@ -239,6 +246,18 @@ enyo.kind({
 			}
 		}
 		return candidateController;
+	},
+	selectNextView: function () {
+		if (this.environment && this.environment.modelName.toLowerCase() != "touchpad") {
+			var pane    = this.$.slidingPane;
+			var viewIdx = pane.getViewIndex();
+			if (viewIdx < pane.views.length - 1) {
+				viewIdx = viewIdx + 1;
+			} else {
+				return;	// we've selected the last available view.
+			}
+			pane.selectViewByIndex(viewIdx);
+		}
 	}
 });
 String.prototype.toTitleCase = function() {
