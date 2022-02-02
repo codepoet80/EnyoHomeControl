@@ -1,6 +1,23 @@
-﻿.lightbulb {
-    background-image: url("../images/lightbulb-icon.png");
+﻿.accessoryListItem {
+    width: "30px";
+    vertical-align: "middle";
 }
-.true {
-    background-image: url("../images/lightbulb-icon-on.png") !important;
+.defaultAccessory {
+    background-image: url("../images/accessory.png");
+}
+.light {
+    background-image: url("../images/light-icon.png");
+}
+.light.true {
+    background-image: url("../images/light-icon-true.png") !important;
+}
+.door {
+    background-image: url("../images/door-icon.png");
+}
+.door.true {
+    background-image: url("../images/door-icon-true.png") !important;
+}
+.highlightedRow {
+    background-color: dimgray;
+    color: white;
 }

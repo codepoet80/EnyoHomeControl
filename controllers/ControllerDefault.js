@@ -1,6 +1,9 @@
 enyo.kind({
 	name: "Controller.Default",
 	kind: "Control",
+	SupportedAccessories: [
+		"room"
+	],
 	components: [
 		{kind: "VFlexBox", flex: 2, pack: "center", components: [
 			{w: "fill", domStyles: {"text-align": "center"}, components: [

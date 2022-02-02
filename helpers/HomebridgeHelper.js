@@ -22,7 +22,7 @@ enyo.kind({
         OnConnectHomeFailure: function(sender) { enyo.error("Homebridge Helper could not logon or load data from Homebridge!"); },
         OnUpdateAccessoriesReady: function(sender) { enyo.warn("Homebridge Helper updated data, but no one is listening to the event!"); },
         OnUpdateAccessoriesFailure: function(sender) { enyo.error("Homebridge Helper could not update data from Homebridge!"); },
-        OnSetAccessoryReady: function(sender) { enyo.warn("Homebridge Helper set an accessory on Homebridge, but no one is listening to the event!"); },
+        OnSetAccessoryReady: function(sender) { enyo.warn("Homebridge Helper set an accessory value on Homebridge, but no one is listening to the event!"); },
         OnSetAccessoryFailure: function(sender) { enyo.error("Homebridge Helper could not set an accessory on Homebridge!"); }
     },
     create: function() {
@@ -94,25 +94,41 @@ enyo.kind({
             }
         }
     },
-    SetAccessoryValue: function(sender, uniqueId, setting, value, successHandler, failureHandler) {
+    SetAccessoryValue: function(sender, uniqueId, type, setting, value, successHandler, failureHandler) {
         enyo.log("setting accessory value on " + uniqueId + " for sender: " + sender.name);
         if (successHandler)
             this.OnSetAccessoryReady = successHandler.bind(this);
         if (failureHandler)
             this.OnSetAccessoryFailure = failureHandler.bind(this);
-
-        //Adapt normalized data
-        switch (setting) {
-            default:
-                var putData = {
-                    "characteristicType": "On",
-                    "value": "0"
-                }
-                if (value)
-                    putData.value = "1";
-                break;
+        enyo.log("Homebridge Helper is operating on type: " + type);
+        //Adapt normalized data for device type
+        if (type == "lightbulb") {
+            switch (setting) {
+                default:
+                    var putData = {
+                        "characteristicType": "On",
+                        "value": "0"
+                    }
+                    if (value)
+                        putData.value = "1";
+                    break;
+            }
+        } else if (type == "garagedoor") {
+            enyo.warn("Homebridge Helper setting garage door setting: " + setting + " to value " + value);
+            switch (setting) {
+                default:
+                    var putData = {
+                        "characteristicType": "TargetDoorState",
+                        "value": "1"
+                    }
+                    if (value)
+                        putData.value = "0";
+                    break;
+            }
+            enyo.log("garage door put data is: " + JSON.stringify(putData));
         }
-        this.$.setAccessory.setUrl(currentHomebridgeApiUrl + "/accessories/" + uniqueId);
+        this.$.setAccessory.setUrl(currentHomebridgeApiUrl + "accessories/" + uniqueId);
+        enyo.log("Homebridge Helper url is: " + this.$.setAccessory.url);
         this.$.setAccessory.setProperty("originalSender", sender);
         this.callServiceWithLatestProps(this.$.setAccessory, putData, {"Authorization": "Bearer " + this.bearerToken});
     },
@@ -156,8 +172,6 @@ enyo.kind({
     },
     loginSuccess: function(inSender, inResponse, inRequest)  {
 		enyo.log("Homebridge Helper got login response: " + JSON.stringify(inResponse));	
-        //EnumerateObject(inSender);
-
 		if (inResponse && inResponse.access_token) {
 			this.bearerToken = inResponse.access_token;
             var originalSender = inSender.getProperty("originalSender");
@@ -177,16 +191,32 @@ enyo.kind({
 	},
     buildNormalizedAccessory: function(accessory, data) {
         if (data.type) {
-            switch(data.type.toLowerCase()){
-                case "lightbulb":
-                    accessory.caption = data.serviceName
-                    accessory.type = "lightbulb";
-                    accessory.state = Boolean(data.values.On);
-                    accessory.amount = data.values.Brightness;
-                    accessory.condition = null;
-                    break;
-                default:
-                    accessory.type = "unknown";
+            if (data.serviceName)
+                accessory.caption = data.serviceName;
+            accessory.class = "defaultAccessory";
+            if (data.type) {
+                accessory.type = data.type.toLowerCase();
+                switch(accessory.type){
+                    case "lightbulb":
+                        accessory.state = Boolean(data.values.On);
+                        accessory.amount = data.values.Brightness;
+                        accessory.condition = null;
+                        accessory.class = "light";
+                        break;
+                    case "garagedooropener":
+                        accessory.type = "garagedoor";
+                        accessory.state = !Boolean(data.values.CurrentDoorState);
+                        if (accessory.state == Boolean(data.values.TargetDoorState))
+                            accessory.amount = 100;
+                        else
+                            accessory.amount = 50;
+                        accessory.condition = !Boolean(data.values.ObstructionDetected);
+                        accessory.class = "door";
+                        break;
+                    default:
+                        enyo.log("HomebridgeHelper found an accessory of unknown type: " + data.type);
+                        accessory.type = "unknown";
+                }
             }
         }
         accessory.data = data;
@@ -221,7 +251,7 @@ enyo.kind({
                 if (augmentedData[i].services) {
                     for (var j=0;j<augmentedData[i].services.length;j++) {
                         if (augmentedData[i].services[j].uniqueId && augmentedData[i].services[j].uniqueId == inResponse.uniqueId) {
-                            //enyo.log("Got new data for accessory " + augmentedData[i].services[j].uniqueId + ": \r\n" + JSON.stringify(inResponse));
+                            //enyo.log("Homebridge Helper got new data for accessory " + augmentedData[i].services[j].uniqueId + ": \r\n" + JSON.stringify(inResponse));
                             augmentedData[i].services[j] = inResponse;
                         }
                     }

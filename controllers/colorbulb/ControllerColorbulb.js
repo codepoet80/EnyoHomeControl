@@ -1,9 +1,12 @@
 enyo.kind({
-	name: "Controller.Lightbulb",
+	name: "Controller.Colorbulb",
 	kind: "Control",
 	CurrentAccessory: null,
 	CurrentHelper: null,
-	currentState: false,
+	CurrentState: false,
+	SupportedAccessories: [
+		"colorbulb"
+	],
 	components: [
 		{kind: "VFlexBox", flex: 2, pack: "center", components: [
 			{w: "fill", domStyles: {"text-align": "center"}, components: [
@@ -22,17 +25,17 @@ enyo.kind({
 		switch(state) {
 			case true:
 				this.$.imageDetail.setSrc("controllers/lightbulb/lightbulb-on.png");
-				this.currentState = true;
+				this.CurrentState = true;
 				break;
 			default:
 				this.$.imageDetail.setSrc("controllers/lightbulb/lightbulb-off.png");
-				this.currentState = false;
+				this.CurrentState = false;
 				break;
 		}
 	},
 	lightControlClick: function() {
 		enyo.log("light clicked for id " + JSON.stringify(this.CurrentAccessory.uniqueId));
-		var newState = !this.currentState;
+		var newState = !this.CurrentState;
 		this.SetState(newState);
 		this.CurrentHelper.SetAccessoryValue(this, this.CurrentAccessory.uniqueId, "state", newState);
 	}

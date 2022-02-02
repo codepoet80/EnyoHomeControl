@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 10000;
+updateRate = 100000;
 updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
@@ -13,7 +13,7 @@ enyo.kind({
 	selectedRoom: null,
 	roomChanged: false,
 	accessoryData: null,
-	selectedLight: null,
+	selectedAccessory: null,
 	currentAccessory: null,
 	components: [
 		{kind: "Helpers.Homebridge", name: "myHomebridge" },
@@ -48,18 +48,18 @@ enyo.kind({
 					{caption: "Update", onclick: "doUpdateRooms"}
 				]}
 			]},
-			{name: "panelLights", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
-				{name: "headerLights", kind: "Header", components: [
-					{w: "fill", content:"Lights", domStyles: {"font-weight": "bold"}},
-					{kind: "Image", flex:1, name: "spinnerLights", src: "images/spinner.gif", domStyles: {width: "20px"}},					
+			{name: "panelAccessories", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
+				{name: "headerAccessories", kind: "Header", components: [
+					{w: "fill", content:"Accessories", domStyles: {"font-weight": "bold"}},
+					{kind: "Image", flex:1, name: "spinnerAccessories", src: "images/spinner.gif", domStyles: {width: "20px"}},					
 				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
-					{flex: 1, name: "lightList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderLightRow", components: [
-						{kind: "Item", className: "item", onclick: "lightClick", /*Xonmousedown: "lightClick",*/ components: [
-							{w: "fill", name:"lightListContainer", domStyles: {margin: "-12px", padding: "12px", "align-items": "center"}, components: [
+					{flex: 1, name: "accessoryList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderAccessoryList", components: [
+						{kind: "Item", className: "item", onclick: "accessoryClick", /*Xonmousedown: "accessoryClick",*/ components: [
+							{w: "fill", name:"accessoryListContainer", domStyles: {margin: "-12px", padding: "12px", "align-items": "center"}, components: [
 								{kind: "HFlexBox", components: [
-									{kind: "CheckBox", flex: 1, name: "accessoryIcon", content:" ", domStyles: { width: "30px", "vertical-align": "middle"} },
-									{name: "lightCaption", flex: 2, domStyles: {overflow: "hidden", "padding-top": "10px", "padding-left": "8px", "text-overflow": "ellipsis"} },									
+									{kind: "CheckBox", flex: 1, name: "accessoryIcon", content:" ", className: "accessoryListItem", domStyles: {width: "30px"} },
+									{name: "accessoryCaption", flex: 2, domStyles: {overflow: "hidden", "padding-top": "10px", "padding-left": "8px", "text-overflow": "ellipsis"} },									
 								]}	
 							]}
 						]}
@@ -69,10 +69,9 @@ enyo.kind({
 					{kind: "GrabButton"},
 				]}
 			]},
-			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [
-								  
+			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [	  
 				{name: "headerDetail", kind: "Header", content: "Nothing Selected", domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
-				{kind: "Pane", name:"paneControl", flex:2, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, components: [
+				{kind: "Pane", name:"paneController", flex:2, lazy:true, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, onSelectView: "accessoryControllerReady", components: [
 					{kind: "Controller.Default", name: "controllerDefault"},
 					{kind: "Controller.Lightbulb", name: "controllerLightbulb"},
 					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor"},
@@ -103,7 +102,12 @@ enyo.kind({
 		this.server = "homebridge.jonandnic.com";
 		//TODO: helper type (support for multiple back-ends)
 		this.homeHelper = this.$.myHomebridge;
-		this.$.controllerLightbulb.CurrentHelper = this.homeHelper;
+
+		//Assign helper to controllers
+		for (var i=0;i<this.$.paneController.controls.length;i++) {
+			enyo.log("Assigning helper to controller: " + this.$.paneController.controls[i].name);
+			this.$.paneController.controls[i].CurrentHelper = this.homeHelper;
+		}
 		
 		//Login and Load Home Layout
 		this.homeHelper.ConnectHome(this, this.server, this.username, this.password, this.homeDataReady);
@@ -113,8 +117,8 @@ enyo.kind({
 		enyo.log("timer fired, online: " + this.online);
 		window.clearInterval(updateInt);
 		if (this.online) {
-			this.$.spinnerLights.applyStyle("display", "inline");
-			this.homeHelper.UpdateAccessories(this, this.lightDataUpdated)
+			this.$.spinnerAccessories.applyStyle("display", "inline");
+			this.homeHelper.UpdateAccessories(this, this.accessoryDataUpdated)
 		}
 		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
@@ -123,11 +127,10 @@ enyo.kind({
 		enyo.log("Home data is ready for: " + self.name);
 		self.layoutData = self.homeHelper.GetHomeLayout();
 		self.$.spinnerRoom.applyStyle("display", "none");
-		//enyo.log(JSON.stringify(self.layoutData));
 		self.$.roomList.refresh();
 
-		enyo.log("Calling for updated accessory data on this: " + self.name);
-		self.homeHelper.UpdateAccessories(self, self.lightDataUpdated);
+		enyo.log("Calling for updated accessory data on: " + self.name);
+		self.homeHelper.UpdateAccessories(self, self.accessoryDataUpdated);
 	},
 	renderRoomRow: function(inSender, inIndex) {
 		if (this.layoutData && this.layoutData.length > 0) {
@@ -141,14 +144,14 @@ enyo.kind({
 					if (this.roomChanged) {
 						enyo.log("refreshing room list because of selection change");
 						this.roomChanged = false;
-						this.showAccessoryController(record.uniqueId, record.caption, "Room");
+						this.showAccessoryController(record.uniqueId, record.caption, "room");
 					} else {
 						enyo.log("refreshing room list because of background sync");
 					}
-					//Load the light list for the selected room
+					//Load the accessory list for the selected room
 					enyo.log("Get accessory data for room: " + record.uniqueId);
-					this.lightData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueId, true);
-					this.$.lightList.refresh();
+					this.accessoryData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueId, true);
+					this.$.accessoryList.refresh();
 				} else {
 					this.$.roomListContainer.applyStyle("background-color", null);
 					this.$.roomListContainer.applyStyle("color", null);
@@ -162,75 +165,91 @@ enyo.kind({
 		if (this.$.selectedRoom != inEvent.rowIndex) {
 			this.roomChanged = true;
 			this.$.selectedRoom = inEvent.rowIndex;
-			this.$.selectedLight = null;
+			this.$.selectedAccessory = null;
 			this.$.roomList.select(inEvent.rowIndex); //OR: this.$.roomList.refresh();
 		}
 	},
-	renderLightRow: function(inSender, inIndex) {
-		if (this.lightData && this.lightData.length > 0) {
-			var record = this.lightData[inIndex];
+	renderAccessoryList: function(inSender, inIndex) {
+		if (this.accessoryData && this.accessoryData.length > 0) {
+			var record = this.accessoryData[inIndex];
 			if (record) {
-				this.$.lightCaption.setContent(record.caption || record.uniqueId);
-				this.$.accessoryIcon.removeClass("true");	//remove previous state so it can be refreshed
-				this.$.accessoryIcon.addClass(record.type);
+				this.$.accessoryCaption.setContent(record.caption || record.uniqueId);
+				this.$.accessoryIcon.setClassName("enyo-checkbox");
+				this.$.accessoryIcon.addClass("accessoryListItem");
+				this.$.accessoryIcon.addClass(record.class);
 				this.$.accessoryIcon.addClass(record.state);
-				var isRowSelected = (inIndex == this.$.selectedLight);
-				if (isRowSelected) {
-					this.$.lightListContainer.applyStyle("background-color", "dimgray");
-					this.$.lightListContainer.applyStyle("color", "white");
-					//enyo.log("Selected Item: " + JSON.stringify(record));
+				var isRowSelected = (inIndex == this.$.selectedAccessory);
+				this.$.accessoryListContainer.addRemoveClass("highlightedRow", isRowSelected);
+				if (isRowSelected) 
 					this.showAccessoryController(record.uniqueId, record.caption, record.type, record.state, record);
-				} else {
-					this.$.lightListContainer.applyStyle("background-color", null);
-					this.$.lightListContainer.applyStyle("color", null);
-				}
 				return true;
 			}
 		}
 	},
-	lightClick: function(inSender, inEvent) {
-		enyo.log("Light clicked on row: " + inEvent.rowIndex);
-		this.$.selectedLight = inEvent.rowIndex;
-		this.$.lightList.select(inEvent.rowIndex);	//OR: this.$.roomList.refresh();
+	accessoryClick: function(inSender, inEvent) {
+		enyo.log("Accessory click on row: " + inEvent.rowIndex);
+		this.$.selectedAccessory = inEvent.rowIndex;
+		this.$.accessoryList.select(inEvent.rowIndex);	//OR: this.$.accessoryList.refresh();
 	},
-	lightDataUpdated: function(self) {
+	accessoryDataUpdated: function(self) {
 		enyo.log("Accessories updated on: " + self.name);
-		self.$.spinnerLights.applyStyle("display", "none");
+		self.$.spinnerAccessories.applyStyle("display", "none");
 		self.$.roomList.refresh();
 	},
-	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType, accessoryState, accessoryData) {
-		switch(accessoryType.toLowerCase()) {
-			case "lightbulb":
-				this.$.headerDetail.setContent(accessoryCaption);
-				this.$.paneControl.selectViewByName("controllerLightbulb");
-				this.$.controllerLightbulb.CurrentAccessory = {
-					uniqueId: accessoryId,
-					data: accessoryData
-				};
-				this.$.controllerLightbulb.SetState(accessoryState);
-				break;
-			case "temperaturesensor":
-				this.$.headerDetail.setContent(accessoryCaption);
-				this.$.paneControl.selectViewByName("controllerTemperatureSensor");
-				break;
-			case "garagedooropener":
-				this.$.headerDetail.setContent(accessoryCaption);
-				this.$.paneControl.selectViewByName("controllerGarageDoor");
-				break;
-			default:
-				this.$.headerDetail.setContent(accessoryCaption);
-				this.$.paneControl.selectViewByName("controllerDefault");
-				break;
+	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType, accessoryState, accessoryPayload) {
+		var useController = this.findControllerForAccessoryType(accessoryType);
+		enyo.log("Loading controller: " + useController + " for accessory type: " + accessoryType);
+		this.$.headerDetail.setContent(accessoryType.toTitleCase());
+		this.$.paneController.selectViewByName(useController);
+		this.currentAccessory = {
+			uniqueId: accessoryId,
+			caption: accessoryCaption,
+			type: accessoryType,
+			state: accessoryState,
+			data: accessoryPayload
 		}
 	},
-	lightControlClick: function(inSender, inEvent) {
-
-		if (this.$.imageDetail.src == "images/lightbulb-on.png")
-			this.$.imageDetail.setSrc("images/lightbulb-off.png");
-		else
-			this.$.imageDetail.setSrc("images/lightbulb-on.png");
+	accessoryControllerReady: function (inSender, inView, inPrevious) {
+		enyo.log("Controller ready: " + inView.name + ", For accessory: " + this.currentAccessory.caption);
+		inView.CurrentAccessory = this.currentAccessory;
+		if (inView.SetState)
+			inView.SetState(this.currentAccessory.state);	//TODO: Figured out published properties' automatic etters, so I don't need this extra call
+		if (inView.OnAccessoryStateChanged)
+			inView.OnAccessoryStateChanged = this.accessoryControllerChangedState.bind(this);
+	},
+	accessoryControllerChangedState: function (inSender, accessoryId, accessoryState) {
+		enyo.log(this.name + " was notified by: " + inSender.name + " that state changed on accessory: " + accessoryId + ", to: " + accessoryState);
+		//find an update the accessory in the list by id
+		for (var i=0;i<this.accessoryData.length;i++) {
+			if (this.accessoryData[i].uniqueId == accessoryId)
+				this.accessoryData[i].state = accessoryState;
+		}
+		this.$.accessoryList.refresh();
+	},
+	findControllerForAccessoryType: function(accessoryType) {
+		var candidateController = "controllerDefault";
+		var controllers = this.$.paneController.controls;
+		for (var i=0;i<controllers.length;i++) {
+			enyo.log("current detail pane: " + controllers[i].name + " supports " + JSON.stringify(controllers[i].SupportedAccessories));
+			if (controllers[i].SupportedAccessories && controllers[i].SupportedAccessories.indexOf(accessoryType) != -1) {
+				if (controllers[i].SupportedAccessories.length == 1)
+					return controllers[i].name;		//prefer exact matches
+				else
+					candidateController = controllers[i].name;		//otherwise, we'll use the best (and last) match
+			}
+		}
+		return candidateController;
 	}
 });
+String.prototype.toTitleCase = function() {
+	return this.replace(
+		/\w\S*/g,
+		function(txt) {
+			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+		}
+	);
+}
+
 /*
 EnumerateObject = function(objectToEnumerate) {
     for (var key in objectToEnumerate) {

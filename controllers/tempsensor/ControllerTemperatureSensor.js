@@ -1,6 +1,9 @@
 enyo.kind({
 	name: "Controller.TemperatureSensor",
 	kind: "Control",
+	SupportedAccessories: [
+		"temperaturesensor"
+	],
 	components: [
 		{kind: "VFlexBox", flex: 2, pack: "center", components: [
 			{w: "fill", domStyles: {"text-align": "center"}, components: [
