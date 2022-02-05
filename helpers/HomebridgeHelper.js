@@ -22,7 +22,7 @@ enyo.kind({
         OnConnectHomeFailure: function(sender) { enyo.error("Homebridge Helper could not logon or load data from Homebridge!"); },
         OnUpdateAccessoriesReady: function(sender) { enyo.warn("Homebridge Helper updated data, but no one is listening to the event!"); },
         OnUpdateAccessoriesFailure: function(sender) { enyo.error("Homebridge Helper could not update data from Homebridge!"); },
-        OnSetAccessoryReady: function(sender) { enyo.warn("Homebridge Helper set an accessory value on Homebridge, but no one is listening to the event!"); },
+        OnSetAccessoryReady: function(sender, response) { enyo.warn("Homebridge Helper set an accessory value on Homebridge, but no one is listening to the event!"+ JSON.stringify(response)); },
         OnSetAccessoryFailure: function(sender) { enyo.error("Homebridge Helper could not set an accessory on Homebridge!"); }
     },
     create: function() {
@@ -100,10 +100,16 @@ enyo.kind({
             this.OnSetAccessoryReady = successHandler.bind(this);
         if (failureHandler)
             this.OnSetAccessoryFailure = failureHandler.bind(this);
-        enyo.log("Homebridge Helper is operating on type: " + type);
+        enyo.log("Homebridge Helper is operating on " + uniqueId + " of type: " + type + " with setting " + setting + " to value " + value);
         //Adapt normalized data for device type
         if (type == "lightbulb") {
             switch (setting) {
+                case "amount":
+                    var putData = {
+                        "characteristicType": "Brightness",
+                        "value": value
+                    }
+                    break;
                 default:
                     var putData = {
                         "characteristicType": "On",
@@ -128,9 +134,9 @@ enyo.kind({
             enyo.log("garage door put data is: " + JSON.stringify(putData));
         }
         this.$.setAccessory.setUrl(currentHomebridgeApiUrl + "accessories/" + uniqueId);
-        enyo.log("Homebridge Helper url is: " + this.$.setAccessory.url);
+        enyo.log("Homebridge Helper url is: " + this.$.setAccessory.url + " putData is " + JSON.stringify(putData));
         this.$.setAccessory.setProperty("originalSender", sender);
-        this.callServiceWithLatestProps(this.$.setAccessory, putData, {"Authorization": "Bearer " + this.bearerToken});
+        this.callServiceWithLatestProps(this.$.setAccessory, JSON.stringify(putData), {"Authorization": "Bearer " + this.bearerToken});
     },
     //#endregion
 
@@ -160,7 +166,8 @@ enyo.kind({
             method: "PUT",
             headers: { "Authorization": "Bearer " },    //to be filled in later
             onSuccess: "setAccessorySuccess",
-            onFailure: "setAccessoryFailure"
+            onFailure: "setAccessoryFailure",
+            contentType: "application/json"
         }
     ],
     callServiceWithLatestProps: function(service, params, headers) {    //Solve a race condition where service properties aren't updated
@@ -271,6 +278,7 @@ enyo.kind({
         var originalSender = inSender.getProperty("originalSender");
         if (originalSender)
             enyo.log("Done setting accessory for original sender: " + originalSender.name);
+        //enyo.log("Response: " + JSON.stringify(inResponse));
         this.OnSetAccessoryReady(originalSender);
     },
     uniqueId: function() {

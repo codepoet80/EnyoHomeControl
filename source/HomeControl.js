@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 20000;
+updateRate = 200000;
 updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
@@ -73,10 +73,10 @@ enyo.kind({
 			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [	  
 				{name: "headerDetail", kind: "Header", content: "Nothing Selected", domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
 				{kind: "Pane", name:"paneController", flex:2, lazy:true, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, onSelectView: "accessoryControllerReady", components: [
-					{kind: "Controller.Default", name: "controllerDefault"},
-					{kind: "Controller.Lightbulb", name: "controllerLightbulb"},
-					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor"},
-					{kind: "Controller.GarageDoor", name: "controllerGarageDoor"}
+					{kind: "Controller.Default", name: "controllerDefault", onAccessoryChanged:"accessoryChanged" },
+					{kind: "Controller.Lightbulb", name: "controllerLightbulb", onAccessoryChanged:"accessoryChanged"},
+					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor", onAccessoryChanged:"accessoryChanged"},
+					{kind: "Controller.GarageDoor", name: "controllerGarageDoor", onAccessoryChanged:"accessoryChanged"}
 				]},
 				{kind: "Toolbar", components: [
 					{kind: "GrabButton"}
@@ -111,7 +111,7 @@ enyo.kind({
 		//Assign helper to controllers
 		for (var i=0;i<this.$.paneController.controls.length;i++) {
 			enyo.log("Assigning helper to controller: " + this.$.paneController.controls[i].name);
-			this.$.paneController.controls[i].CurrentHelper = this.homeHelper;
+			this.$.paneController.controls[i].helper = this.homeHelper;
 		}
 		
 		//Login and Load Home Layout
@@ -149,7 +149,8 @@ enyo.kind({
 					if (this.roomChanged) {
 						enyo.log("refreshing room list because of selection change");
 						this.roomChanged = false;
-						this.showAccessoryController(record.uniqueId, record.caption, "room");
+						enyo.log("room data: " + JSON.stringify(record));
+						this.showAccessoryController(record);
 					} else {
 						enyo.log("refreshing room list because of background sync");
 					}
@@ -187,7 +188,7 @@ enyo.kind({
 				var isRowSelected = (inIndex == this.$.selectedAccessory);
 				this.$.accessoryListContainer.addRemoveClass("highlightedRow", isRowSelected);
 				if (isRowSelected) 
-					this.showAccessoryController(record.uniqueId, record.caption, record.type, record.state, record);
+					this.showAccessoryController(record);
 				return true;
 			}
 		}
@@ -203,35 +204,24 @@ enyo.kind({
 		self.$.spinnerAccessories.applyStyle("display", "none");
 		self.$.roomList.refresh();
 	},
-	showAccessoryController: function(accessoryId, accessoryCaption, accessoryType, accessoryState, accessoryPayload) {
-		var useController = this.findControllerForAccessoryType(accessoryType);
-		enyo.log("Loading controller: " + useController + " for accessory type: " + accessoryType);
-		this.$.headerDetail.setContent(accessoryType.toTitleCase());
+	showAccessoryController: function(accessory) {
+		var useController = this.findControllerForAccessoryType(accessory.type);
+		enyo.log("Loading controller: " + useController + " for accessory type: " + accessory.type);
+		this.$.headerDetail.setContent(accessory.type.toTitleCase());
 		this.$.paneController.selectViewByName(useController);
-		this.currentAccessory = {
-			uniqueId: accessoryId,
-			caption: accessoryCaption,
-			type: accessoryType,
-			state: accessoryState,
-			data: accessoryPayload
-		}
+		this.currentAccessory = accessory;
 	},
 	accessoryControllerReady: function (inSender, inView, inPrevious) {
-		enyo.log("Controller ready: " + inView.name + ", For accessory: " + this.currentAccessory.caption);
-		inView.CurrentAccessory = this.currentAccessory;
-		if (inView.SetState)
-			inView.SetState(this.currentAccessory.state);	//TODO: Figured out published properties' automatic etters, so I don't need this extra call
-		if (inView.OnAccessoryStateChanged)
-			inView.OnAccessoryStateChanged = this.accessoryControllerChangedState.bind(this);
+		enyo.log("Controller:" + inView.name + " ready, for Accessory: " + this.currentAccessory.caption);
+		inView.setProperty("accessory", this.currentAccessory);
 	},
-	accessoryControllerChangedState: function (inSender, accessoryId, accessoryState) {
-		enyo.log(this.name + " was notified by: " + inSender.name + " that state changed on accessory: " + accessoryId + ", to: " + accessoryState);
-		//find an update the accessory in the list by id
+	accessoryChanged: function(inSender, inEvent){
+		//find and update the accessory in the list by id
 		for (var i=0;i<this.accessoryData.length;i++) {
-			if (this.accessoryData[i].uniqueId == accessoryId)
-				this.accessoryData[i].state = accessoryState;
+			if (this.accessoryData[i].uniqueId == inSender.accessory.uniqueId)
+				this.accessoryData[i].state = inSender.state;
 		}
-		this.$.accessoryList.refresh();
+	 	this.$.accessoryList.refresh();
 	},
 	findControllerForAccessoryType: function(accessoryType) {
 		var candidateController = "controllerDefault";
@@ -269,7 +259,7 @@ String.prototype.toTitleCase = function() {
 	);
 }
 
-/*
+
 EnumerateObject = function(objectToEnumerate) {
     for (var key in objectToEnumerate) {
         enyo.log("=== prop:" + key + ": " + objectToEnumerate[key]);
@@ -283,4 +273,4 @@ EnumerateObject = function(objectToEnumerate) {
         }
     }
 }
-*/
+
