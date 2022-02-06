@@ -75,6 +75,7 @@ enyo.kind({
 				{kind: "Pane", name:"paneController", flex:2, lazy:true, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, onSelectView: "accessoryControllerReady", components: [
 					{kind: "Controller.Default", name: "controllerDefault", onAccessoryChanged:"accessoryChanged" },
 					{kind: "Controller.Lightbulb", name: "controllerLightbulb", onAccessoryChanged:"accessoryChanged"},
+					{kind: "Controller.Colorbulb", name: "controllerColorbulb", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.GarageDoor", name: "controllerGarageDoor", onAccessoryChanged:"accessoryChanged"}
 				]},
@@ -176,6 +177,11 @@ enyo.kind({
 			this.$.roomList.select(inEvent.rowIndex); //OR: this.$.roomList.refresh();
 		}
 	},
+	accessoryDataUpdated: function() {
+		enyo.log("Accessories updated on: " + this.name);
+		this.$.spinnerAccessories.applyStyle("display", "none");
+		this.$.roomList.refresh();
+	},
 	renderAccessoryList: function(inSender, inIndex) {
 		if (this.accessoryData && this.accessoryData.length > 0) {
 			var record = this.accessoryData[inIndex];
@@ -199,17 +205,16 @@ enyo.kind({
 		this.$.selectedAccessory = inEvent.rowIndex;
 		this.$.accessoryList.select(inEvent.rowIndex);	//OR: this.$.accessoryList.refresh();
 	},
-	accessoryDataUpdated: function() {
-		enyo.log("Accessories updated on: " + this.name);
-		this.$.spinnerAccessories.applyStyle("display", "none");
-		this.$.roomList.refresh();
-	},
 	showAccessoryController: function(accessory) {
-		var useController = this.findControllerForAccessoryType(accessory.type);
-		enyo.log("Loading controller: " + useController + " for accessory type: " + accessory.type);
-		this.$.headerDetail.setContent(accessory.type.toTitleCase());
-		this.$.paneController.selectViewByName(useController);
-		this.currentAccessory = accessory;
+		//enyo.log(JSON.stringify(accessory));
+		if (accessory && accessory.type) {
+			var useController = this.findControllerForAccessoryType(accessory.type);
+			enyo.log("Loading controller: " + useController + " for accessory type: " + accessory.type);
+	
+			this.$.headerDetail.setContent(accessory.type.toTitleCase());
+			this.$.paneController.selectViewByName(useController);
+			this.currentAccessory = accessory;
+		}
 	},
 	accessoryControllerReady: function (inSender, inView, inPrevious) {
 		enyo.log("Controller:" + inView.name + " ready for Accessory: " + this.currentAccessory.caption);

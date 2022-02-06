@@ -174,39 +174,6 @@ enyo.kind({
     getHomeData: function(inSender) {
         this.callServiceWithLatestProps(this.$.getLayout, null, {"Authorization": "Bearer " + this.bearerToken})
 	},
-    buildNormalizedAccessory: function(accessory, data) {
-        if (data.type) {
-            if (data.serviceName)
-                accessory.caption = data.serviceName;
-            accessory.class = "defaultAccessory";
-            if (data.type) {
-                accessory.type = data.type.toLowerCase();
-                switch(accessory.type){
-                    case "lightbulb":
-                        accessory.state = Boolean(data.values.On);
-                        accessory.amount = data.values.Brightness;
-                        accessory.condition = null;
-                        accessory.class = "light";
-                        break;
-                    case "garagedooropener":
-                        accessory.type = "garagedoor";
-                        accessory.state = !Boolean(data.values.CurrentDoorState);
-                        if (accessory.state == Boolean(data.values.TargetDoorState))
-                            accessory.amount = 100;
-                        else
-                            accessory.amount = 50;
-                        accessory.condition = !Boolean(data.values.ObstructionDetected);
-                        accessory.class = "door";
-                        break;
-                    default:
-                        enyo.log("HomebridgeHelper found an accessory of unknown type: " + data.type);
-                        accessory.type = "unknown";
-                }
-            }
-        }
-        accessory.data = data;
-        return accessory
-    },
     getLayoutSuccess: function(inSender, inResponse, inRequest) {
         if (inResponse) { //and its an object
             //enyo.log("Homebridge Helper got home layout response: " + inResponse);
@@ -245,6 +212,41 @@ enyo.kind({
             this.doUpdateAccessoriesReady();
         }
             
+    },
+    buildNormalizedAccessory: function(accessory, data) {
+        if (data.type) {
+            if (data.serviceName)
+                accessory.caption = data.serviceName;
+            accessory.class = "defaultAccessory";
+            if (data.type) {
+                accessory.type = data.type.toLowerCase();
+                switch(accessory.type){
+                    case "lightbulb":
+                        if (data.values && (data.values.hasOwnProperty("Hue") || data.values.hasOwnProperty("Saturation")))
+                            accessory.type = "colorbulb";
+                        accessory.state = Boolean(data.values.On);
+                        accessory.amount = data.values.Brightness;
+                        accessory.condition = null;
+                        accessory.class = "light";
+                        break;
+                    case "garagedooropener":
+                        accessory.type = "garagedoor";
+                        accessory.state = !Boolean(data.values.CurrentDoorState);
+                        if (accessory.state == Boolean(data.values.TargetDoorState))
+                            accessory.amount = 100;
+                        else
+                            accessory.amount = 50;
+                        accessory.condition = !Boolean(data.values.ObstructionDetected);
+                        accessory.class = "door";
+                        break;
+                    default:
+                        enyo.log("HomebridgeHelper found an accessory of unknown type: " + data.type);
+                        accessory.type = "unknown";
+                }
+            }
+        }
+        accessory.data = data;
+        return accessory
     },
     setAccessorySuccess: function(inSender, inResponse, inRequest) {
         this.doSetAccessoryReady();
