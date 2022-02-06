@@ -212,7 +212,7 @@ enyo.kind({
 		this.currentAccessory = accessory;
 	},
 	accessoryControllerReady: function (inSender, inView, inPrevious) {
-		enyo.log("Controller:" + inView.name + " ready, for Accessory: " + this.currentAccessory.caption);
+		enyo.log("Controller:" + inView.name + " ready for Accessory: " + this.currentAccessory.caption);
 		inView.setProperty("accessory", this.currentAccessory);
 	},
 	accessoryChanged: function(inSender, inEvent){
