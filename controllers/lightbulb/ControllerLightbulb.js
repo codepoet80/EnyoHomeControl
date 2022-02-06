@@ -67,7 +67,9 @@ enyo.kind({
 		this.doAccessoryChanged(inEvent);
 	},
 	dimmerChanged: function(inSender, inEvent) {
-		enyo.log("Dimmer value: " + this.$.sliderDimmer.position);
-		this.helper.SetAccessoryValue(this, this.accessory.uniqueId, this.accessory.type, "amount", this.$.sliderDimmer.position);
+		this.amount = this.$.sliderDimmer.position;
+		enyo.log("Dimmer value: " + this.amount);
+		this.helper.SetAccessoryValue(this, this.accessory.uniqueId, this.accessory.type, "amount", this.amount);
+		this.doAccessoryChanged(inEvent);
 	}
 });

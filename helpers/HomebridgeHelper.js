@@ -84,6 +84,7 @@ enyo.kind({
     SetAccessoryValue: function(sender, uniqueId, type, setting, value) {
         enyo.log("Homebridge Helper is operating on " + uniqueId + " of type: " + type + " with setting " + setting + " to value " + value);
         //Adapt normalized data for device type
+        //TODO: Privatize
         if (type == "lightbulb") {
             switch (setting) {
                 case "amount":

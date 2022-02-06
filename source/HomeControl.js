@@ -220,6 +220,8 @@ enyo.kind({
 		for (var i=0;i<this.accessoryData.length;i++) {
 			if (this.accessoryData[i].uniqueId == inSender.accessory.uniqueId)
 				this.accessoryData[i].state = inSender.state;
+				this.accessoryData[i].amount = inSender.amount;
+				this.accessoryData[i].condition = inSender.condition;
 		}
 	 	this.$.accessoryList.refresh();
 	},
