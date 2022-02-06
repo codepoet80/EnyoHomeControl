@@ -10,7 +10,7 @@ Async methods support callbacks, which have also been modelled as events.
 
 + With Callbacks
 
-Perform the initial connection, and if necessary, authentication to the home automation system. Then loads the data about the home from the home automation system asynchronously. Fires OnConnectHomeReady callback when everything is complete.
+Perform the initial connection, and if necessary, authentication to the home automation system. Then loads the data about the home from the home automation system asynchronously. Fires onConnectHomeReady callback when everything is complete.
 
 ### GetHomeLayout
 
@@ -24,21 +24,21 @@ Synchronously gets the list of accessories, with the their current state, for a 
 
 + With Callbacks
 
-Asynchronously updates the state of all accessories in the home, including new structure if the home layout has changed since initially loaded. Fires OnUpdateAccessoriesReady callback when everything is complete.
+Asynchronously updates the state of all accessories in the home, including new structure if the home layout has changed since initially loaded. Fires onUpdateAccessoriesReady callback when everything is complete.
 
 ### SetAccessoryValue
 
 + With Callbacks
 
-Asynchronously sets a value for an accessory (eg: set a light to on or off). Fires OnSetAccessoryValueReady callback with the response from the home automation system.
+Asynchronously sets a value for an accessory (eg: set a light to on or off). Fires onSetAccessoryValueReady callback with the response from the home automation system.
 
 ## Events
 
-### On<Function>Ready
+### on<Function>Ready
 
 Called when the function completes successfully
 
-### On<Function>Failure
+### on<Function>Failure
 
 Called when the function fails
 

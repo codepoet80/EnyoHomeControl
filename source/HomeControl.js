@@ -17,7 +17,7 @@ enyo.kind({
 	selectedAccessory: null,
 	currentAccessory: null,
 	components: [
-		{kind: "Helpers.Homebridge", name: "myHomebridge" },
+		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onError: "" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
 		//UI Elements
 		{kind: "PageHeader", className: "enyo-header-dark", components: [
@@ -115,7 +115,7 @@ enyo.kind({
 		}
 		
 		//Login and Load Home Layout
-		this.homeHelper.ConnectHome(this, this.server, this.username, this.password, this.homeDataReady);
+		this.homeHelper.ConnectHome(this, this.server, this.username, this.password);
 		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
 	periodicUpdate: function() {
@@ -123,19 +123,19 @@ enyo.kind({
 		window.clearInterval(updateInt);
 		if (this.online) {
 			this.$.spinnerAccessories.applyStyle("display", "inline");
-			this.homeHelper.UpdateAccessories(this, this.accessoryDataUpdated)
+			this.homeHelper.UpdateAccessories(this)
 		}
 		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
-	homeDataReady: function(self) {
-		self.online = true;
-		enyo.log("Home data is ready for: " + self.name);
-		self.layoutData = self.homeHelper.GetHomeLayout();
-		self.$.spinnerRoom.applyStyle("display", "none");
-		self.$.roomList.refresh();
+	homeDataReady: function() {
+		this.online = true;
+		enyo.log("Home data is ready for: " + this.name);
+		this.layoutData = this.homeHelper.GetHomeLayout();
+		this.$.spinnerRoom.applyStyle("display", "none");
+		this.$.roomList.refresh();
 
-		enyo.log("Calling for updated accessory data on: " + self.name);
-		self.homeHelper.UpdateAccessories(self, self.accessoryDataUpdated);
+		enyo.log("Calling for updated accessory data on: " + this.name);
+		this.homeHelper.UpdateAccessories(this);
 	},
 	renderRoomRow: function(inSender, inIndex) {
 		if (this.layoutData && this.layoutData.length > 0) {
@@ -199,10 +199,10 @@ enyo.kind({
 		this.$.selectedAccessory = inEvent.rowIndex;
 		this.$.accessoryList.select(inEvent.rowIndex);	//OR: this.$.accessoryList.refresh();
 	},
-	accessoryDataUpdated: function(self) {
-		enyo.log("Accessories updated on: " + self.name);
-		self.$.spinnerAccessories.applyStyle("display", "none");
-		self.$.roomList.refresh();
+	accessoryDataUpdated: function() {
+		enyo.log("Accessories updated on: " + this.name);
+		this.$.spinnerAccessories.applyStyle("display", "none");
+		this.$.roomList.refresh();
 	},
 	showAccessoryController: function(accessory) {
 		var useController = this.findControllerForAccessoryType(accessory.type);
@@ -227,7 +227,7 @@ enyo.kind({
 		var candidateController = "controllerDefault";
 		var controllers = this.$.paneController.controls;
 		for (var i=0;i<controllers.length;i++) {
-			enyo.log("current detail pane: " + controllers[i].name + " supports " + JSON.stringify(controllers[i].SupportedAccessories));
+			//enyo.log("current detail pane: " + controllers[i].name + " supports " + JSON.stringify(controllers[i].SupportedAccessories));
 			if (controllers[i].SupportedAccessories && controllers[i].SupportedAccessories.indexOf(accessoryType) != -1) {
 				if (controllers[i].SupportedAccessories.length == 1)
 					return controllers[i].name;		//prefer exact matches
@@ -258,7 +258,6 @@ String.prototype.toTitleCase = function() {
 		}
 	);
 }
-
 
 EnumerateObject = function(objectToEnumerate) {
     for (var key in objectToEnumerate) {
