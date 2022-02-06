@@ -9,7 +9,7 @@ enyo.kind({
 		accessory: null,
 		helper: null,
 		state: false,
-		amount: 50,
+		amount: 0,
 		condition: true
 	},
 	events: {
