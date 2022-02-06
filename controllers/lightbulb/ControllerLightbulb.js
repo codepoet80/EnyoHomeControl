@@ -20,7 +20,7 @@ enyo.kind({
 		enyo.warn(this.name + " created!");
 		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.4) + "px");
 		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.4) + "px");
-		this.$.sliderDimmer.setProperty("position", 66);
+		this.accessoryChanged();
 	},
 	stateChanged: function(oldState) {	//This is a UI function only, to actually change the accessory value, call the Helper
 		enyo.log(this.name + " is setting " + this.SupportedAccessories[0] + " state from: " + oldState + " to " + this.state);
@@ -39,13 +39,15 @@ enyo.kind({
 		this.$.captionDetail.setContent(newCaption);
 	},
 	accessoryChanged: function(oldAccessory) {
-		enyo.log(this.name + " has been informed of a new accessory " + this.accessory.caption);
-		//enyo.log(JSON.stringify(this.accessory));
-		this.state = this.accessory.state;
-		this.stateChanged();
-		this.amount = this.accessory.amount;
-		this.$.sliderDimmer.setProperty("position", this.amount);
-		this.condition = this.accessory.condition;
+		if (this.accessory && this.accessory.caption) {
+			enyo.log(this.name + " has been informed of a new accessory " + this.accessory.caption);
+			//enyo.log(JSON.stringify(this.accessory));
+			this.state = this.accessory.state;
+			this.stateChanged();
+			this.amount = this.accessory.amount;
+			this.$.sliderDimmer.setProperty("position", this.amount);
+			this.condition = this.accessory.condition;
+		}
 	},
 	/* Private Definitions */
 	components: [

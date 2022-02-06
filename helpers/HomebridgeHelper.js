@@ -85,40 +85,54 @@ enyo.kind({
         enyo.log("Homebridge Helper is operating on " + uniqueId + " of type: " + type + " with setting " + setting + " to value " + value);
         //Adapt normalized data for device type
         //TODO: Privatize
-        if (type == "lightbulb") {
-            switch (setting) {
-                case "amount":
-                    var putData = {
-                        "characteristicType": "Brightness",
-                        "value": value
-                    }
-                    break;
-                default:
-                    var putData = {
-                        "characteristicType": "On",
-                        "value": "0"
-                    }
-                    if (value)
-                        putData.value = "1";
-                    break;
-            }
-        } else if (type == "garagedoor") {
-            enyo.warn("Homebridge Helper setting garage door setting: " + setting + " to value " + value);
-            switch (setting) {
-                default:
-                    var putData = {
-                        "characteristicType": "TargetDoorState",
-                        "value": "1"
-                    }
-                    if (value)
-                        putData.value = "0";
-                    break;
-            }
-            enyo.log("garage door put data is: " + JSON.stringify(putData));
+        var putData = null;
+        switch (type) {
+            case "lightbulb": 
+                switch (setting) {
+                    case "amount":
+                        var putData = {
+                            "characteristicType": "Brightness",
+                            "value": value
+                        }
+                        break;
+                    default:
+                        var putData = {
+                            "characteristicType": "On",
+                            "value": "0"
+                        }
+                        if (value)
+                            putData.value = "1";
+                        break;
+                }
+                break;
+            case "colorbulb":
+                putData = {
+                    "characteristicType": setting,
+                    "value": value
+                }
+                break;
+            case "garagedoor":
+                enyo.warn("Homebridge Helper setting garage door setting: " + setting + " to value " + value);
+                switch (setting) {
+                    default:
+                        var putData = {
+                            "characteristicType": "TargetDoorState",
+                            "value": "1"
+                        }
+                        if (value)
+                            putData.value = "0";
+                        break;
+                }
+                enyo.log("garage door put data is: " + JSON.stringify(putData));
+                break;
         }
-        this.$.setAccessory.setUrl(this.currentHomebridgeApiUrl + "accessories/" + uniqueId);
-        enyo.log("Homebridge Helper url is: " + this.$.setAccessory.url + " putData is " + JSON.stringify(putData));
-        this.callServiceWithLatestProps(this.$.setAccessory, JSON.stringify(putData), {"Authorization": "Bearer " + this.bearerToken});
+        if (putData) {
+            this.$.setAccessory.setUrl(this.currentHomebridgeApiUrl + "accessories/" + uniqueId);
+            enyo.log("Homebridge Helper url is: " + this.$.setAccessory.url + " putData is " + JSON.stringify(putData));
+            this.callServiceWithLatestProps(this.$.setAccessory, JSON.stringify(putData), {"Authorization": "Bearer " + this.bearerToken});
+        } else {
+            enyo.warn("Homebridge Helper could not build data for SetAccessoryValue call. Ensure the accessory type is handled.")
+        }
     },
     //#endregion
 
@@ -211,7 +225,6 @@ enyo.kind({
         if (this.refreshCount <= 0) {
             this.doUpdateAccessoriesReady();
         }
-            
     },
     buildNormalizedAccessory: function(accessory, data) {
         if (data.type) {
@@ -222,10 +235,16 @@ enyo.kind({
                 accessory.type = data.type.toLowerCase();
                 switch(accessory.type){
                     case "lightbulb":
-                        if (data.values && (data.values.hasOwnProperty("Hue") || data.values.hasOwnProperty("Saturation")))
-                            accessory.type = "colorbulb";
                         accessory.state = Boolean(data.values.On);
                         accessory.amount = data.values.Brightness;
+                        if (data.values && data.values.hasOwnProperty("Hue") && data.values.hasOwnProperty("Saturation")) {
+                            accessory.type = "colorbulb";
+                            accessory.amount = {
+                                hue: data.values.Hue,
+                                saturation: data.values.Saturation,
+                                brightness: accessory.amount,
+                            }
+                        }
                         accessory.condition = null;
                         accessory.class = "light";
                         break;
@@ -233,9 +252,9 @@ enyo.kind({
                         accessory.type = "garagedoor";
                         accessory.state = !Boolean(data.values.CurrentDoorState);
                         if (accessory.state == Boolean(data.values.TargetDoorState))
-                            accessory.amount = 100;
+                            accessory.amount = [100]
                         else
-                            accessory.amount = 50;
+                            accessory.amount = [50];
                         accessory.condition = !Boolean(data.values.ObstructionDetected);
                         accessory.class = "door";
                         break;

@@ -40,12 +40,14 @@ enyo.kind({
 		this.$.captionDetail.setContent(newCaption);
 	},
 	accessoryChanged: function(oldAccessory) {
-		enyo.log(this.name + " has been informed of a new accessory " + this.accessory.caption);
-		//enyo.log(JSON.stringify(this.accessory));
-		this.state = this.accessory.state;
-		this.stateChanged();
-		this.amount = this.accessory.amount;
-		this.condition = this.accessory.condition;
+		if (this.accessory && this.accessory.caption) {
+			enyo.log(this.name + " has been informed of a new accessory " + this.accessory.caption);
+			//enyo.log(JSON.stringify(this.accessory));
+			this.state = this.accessory.state;
+			this.stateChanged();
+			this.amount = this.accessory.amount;
+			this.condition = this.accessory.condition;
+		}
 	},
 	/* Private Definitions */
 	components: [
