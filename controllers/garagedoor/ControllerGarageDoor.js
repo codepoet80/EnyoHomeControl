@@ -1,6 +1,7 @@
 enyo.kind({
 	name: "Controller.GarageDoor",
 	kind: "Control",
+	layoutKind: "VFlexLayout", 
 	/* Public Interface */
 	SupportedAccessories: [
 		"garagedoor"
@@ -51,7 +52,7 @@ enyo.kind({
 	},
 	/* Private Definitions */
 	components: [
-		{kind: "VFlexBox", flex: 2, pack: "center", components: [
+		{kind:"Scroller", flex: 1, components: [
 			{w: "fill", domStyles: {"text-align": "center"}, components: [
 				{kind: "Image", flex:1, name: "imageDetail", src: "controllers/garagedoor/garagedoor-closed.png", onclick: "garageControlClick", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
 			]},

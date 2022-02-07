@@ -1,11 +1,12 @@
 enyo.kind({
 	name: "Controller.TemperatureSensor",
 	kind: "Control",
+	layoutKind: "VFlexLayout", 
 	SupportedAccessories: [
 		"temperaturesensor"
 	],
 	components: [
-		{kind: "VFlexBox", flex: 2, pack: "center", components: [
+		{kind:"Scroller", flex: 1, components: [
 			{w: "fill", domStyles: {"text-align": "center"}, components: [
 				{kind: "Image", flex:1, name: "imageDetail", src: "controllers/tempsensor/thermometer.png", onclick: "lightControlClick", domStyles: {height: "400px", "margin-left": "auto", "margin-right": "auto"}},
 			]},
