@@ -1,6 +1,6 @@
 /*
 Updater Helper - Enyo
- Version 0.2
+ Version 0.3
  Created: 2022
  Author: Jonathan Wise
  License: MIT
@@ -16,26 +16,27 @@ enyo.kind({
     name: "Helpers.Updater",
     kind: "Control",
     sender: null,
-    published: {
-        OnUpdateResponse: function(sender, message) { this.PromptUserForUpdate(message) },
-        LastUpdateResponse: null,
-        deviceId: null,
-        appName: null
+    LastUpdateResponse: null,
+    VersionNote: "",
+    deviceId: null,
+    appName: null,
+    events: {
+        onUpdateFound: "",
     },
-    
+    published: {
+        handleUI: true
+    },
+
     create: function() {
         this.inherited(arguments);
-        enyo.log("Update Helper created.");
+        enyo.log("Updater Helper created.");
     },
 
     //#region Public
     //  You can call these methods from your code
-    CheckForUpdate: function(sender, appName, callBack) {
-        this.sender = sender;
+    CheckForUpdate: function(appName) {
         if (appName) {
             this.appName = appName;
-            if (callBack)
-                this.OnUpdateResponse = callBack.bind(this);
             if (window.location.hostname.indexOf(".media.cryptofs.apps") != -1) {
                 this.$.propertyRequest.call(
                 {
@@ -45,7 +46,7 @@ enyo.kind({
                     method: "Get"
                 });
             } else {
-                this.performIdentifiedUpdateCheck(sender);
+                this.performIdentifiedUpdateCheck();
             }
         }
     },
@@ -55,7 +56,7 @@ enyo.kind({
             enyo.log("Updater Helper: Not prompting user for update when no update has been discovered.");
         } else {
             if (!message)
-                message = "An update for this app was found in App Museum II:<br>Do you want to update now?";
+                message = "An update for this app was found in App Museum II:<br><br>" + this.VersionNote + "<br><br>Do you want to update now?";
             else
                 message = "An update for this app was found in App Museum II:<br><br>" + message + "<br><br>Do you want to update now?";
             this.$.updateMsg.setContent(message);
@@ -64,6 +65,8 @@ enyo.kind({
     },
 
     InstallViaPreware: function(app) {
+        if (!app)
+            app = this.LastUpdateResponse.downloadURI;
         this.$.installRequest.call({ id: "org.webosinternals.preware", params: { type: "install", file: app } });
     },
     //#endregion
@@ -153,7 +156,12 @@ enyo.kind({
             var museumVersion = this.getVersionObject(inResponse.version);
             if (this.isVersionHigher(currVersion, museumVersion)) {
                 enyo.log("Updater Helper found an update in webOS App Museum II!");
-                this.OnUpdateResponse(this.sender, inResponse.versionNote);
+                this.VersionNote = inResponse.versionNote;
+                this.doUpdateFound();
+                if (this.handleUI) {
+                    enyo.log("Updater Helper is handling UI for user prompt.");
+                    this.PromptUserForUpdate(this.VersionNote);
+                }
             } else {
                 enyo.log("Updater Helper did not find an update in webOS App Museum II!");
                 inResponse = false;
