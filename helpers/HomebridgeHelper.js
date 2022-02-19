@@ -106,9 +106,27 @@ enyo.kind({
                 }
                 break;
             case "colorbulb":
-                putData = {
-                    "characteristicType": setting,
-                    "value": value
+                switch (setting) {
+                    case "state":
+                        var putData = {
+                            "characteristicType": "On",
+                            "value": "0"
+                        }
+                        if (value)
+                            putData.value = "1";
+                        break;
+                    case "amount":
+                        var putData = {
+                            "characteristicType": "Brightness",
+                            "value": value
+                        }
+                        break;
+                    default:
+                        putData = {
+                            "characteristicType": setting,
+                            "value": value
+                        }
+                        break;        
                 }
                 break;
             case "garagedoor":
