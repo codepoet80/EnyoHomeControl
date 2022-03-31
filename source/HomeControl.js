@@ -24,13 +24,13 @@ enyo.kind({
 			{kind: "VFlexBox", flex: 1, align: "center", components: [
 				{content: "Home Control", domStyles: {"font-weight": "bold"}},
 			]},
-			{kind: "Button", className: "enyo-button-dark", caption: "Sign Out", onclick: "backHandler"},
+			{kind: "Button", name:"btnSignInOut", className: "enyo-button-dark", caption: "Sign In", onclick: "doSignInOut"},
 		]},
 		{name: "slidingPane", kind: "SlidingPane", flex: 1, onSelectView: "slidingSelected", components: [
 			{name: "panelRooms", width: "250px", components: [
 				{name: "headerRoom", kind: "Header", components: [
 					{w: "fill", content:"Rooms", domStyles: {"font-weight": "bold"}},
-					{kind: "Image", flex:1, name: "spinnerRoom", src: "images/spinner.gif", domStyles: {width: "20px"}},					
+					{kind: "Image", flex:1, name: "spinnerRoom", src: "images/spinner.gif", domStyles: {display:"none", width: "20px"}},					
 				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "roomList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderRoomRow", components: [
@@ -52,7 +52,7 @@ enyo.kind({
 			{name: "panelAccessories", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
 				{name: "headerAccessories", kind: "Header", components: [
 					{w: "fill", content:"Accessories", domStyles: {"font-weight": "bold"}},
-					{kind: "Image", flex:1, name: "spinnerAccessories", src: "images/spinner.gif", domStyles: {width: "20px"}},					
+					{kind: "Image", flex:1, name: "spinnerAccessories", src: "images/spinner.gif", domStyles: {display:"none", width: "20px"}},					
 				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "accessoryList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderAccessoryList", components: [
@@ -84,6 +84,21 @@ enyo.kind({
 				]}
 			]}
 		]},
+		{ kind: "ModalDialog", name: "modalLogin", onOpen: "addServerDialogOpen", components: [
+			{ name: "loginTitle", content: "Sign In", style: "text-align:center;" },
+			{ kind: "VFlexBox", align: "left", components: [
+				{ kind: "ListSelector", value: "homebridge", name: "loginBackendType", style: "margin:10px;", items: [
+					{ caption: "HomeBridge", value: "homebridge" },
+				]},
+				{ kind: "Input", name: "loginServerPath", spellcheck: false, autoWordComplete: false, hint: "Server Path" },
+				{ kind: "Input", name: "loginUsername", disabled: false, spellcheck: false, autoWordComplete: false, autoCapitalize: "lowercase", hint: "User Name" },
+				{ kind: "PasswordInput", name: "loginPassword", disabled: false, spellcheck: false, autoWordComplete: false, autoCapitalize: "lowercase", hint: "Password" },
+			]},
+			{ kind: "HFlexBox", align: "middle", style:"margin-top:10px", components: [
+				{ kind: "Button", flex: 1, caption: "OK", onclick: "btnSaveLogin" },
+				{ kind: "Button", flex: 1, caption: "Cancel", onclick: "btnCancelLogin" }
+			]}
+		 ]},
 	],
 	create: function() {
 		this.inherited(arguments);
@@ -98,26 +113,18 @@ enyo.kind({
 			enyo.log("LuneOS environment detected");
 		} else {    // Running in a web browser
 			enyo.warn("embedded environment not detected, assuming a web server!");
+			//TODO: Loop through all elements that need classes added
+			this.$.modalLogin.addClass("browserModal");
 		}
-
-		//Load preferences
-		//TODO: username and password
-		this.username = "admin";
-		this.password = "admin";
-		//TODO: server path
-		this.server = "homebridge.jonandnic.com";
-		//TODO: helper type (support for multiple back-ends)
-		this.homeHelper = this.$.myHomebridge;
 
 		//Assign helper to controllers
 		for (var i=0;i<this.$.paneController.controls.length;i++) {
 			enyo.log("Assigning helper to controller: " + this.$.paneController.controls[i].name);
 			this.$.paneController.controls[i].helper = this.homeHelper;
 		}
-		
-		//Login and Load Home Layout
-		this.homeHelper.ConnectHome(this, this.server, this.username, this.password);
-		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
+		//Load preferences or show dialog
+		this.$.spinnerRoom.applyStyle("display", "none");
+		this.$.spinnerAccessories.applyStyle("display", "none");
 	},
 	periodicUpdate: function() {
 		enyo.log("Update fired, online: " + this.online);
@@ -255,7 +262,34 @@ enyo.kind({
 			}
 			pane.selectViewByIndex(viewIdx);
 		}
-	}
+	},
+	doSignInOut: function() {
+		if (this.$.btnSignInOut.caption == "Sign In")
+			this.$.modalLogin.openAtCenter();
+		else {
+			//TODO: Clear out
+			this.$.btnSignInOut.setCaption("Sign In");
+		}
+	},
+	btnSaveLogin: function() {
+		this.username = this.$.loginUsername.getValue();
+		this.password = this.$.loginPassword.getValue();
+		this.server = this.$.loginServerPath.getValue();
+		//TODO: helper type (support for multiple back-ends)
+		this.homeHelper = this.$.myHomebridge;
+
+		//Login and Load Home Layout
+		this.$.btnSignInOut.setCaption("Sign Out");
+		this.$.spinnerRoom.applyStyle("display", "inline");
+		this.$.spinnerAccessories.applyStyle("display", "inline");
+		this.homeHelper.ConnectHome(this, this.server, this.username, this.password);
+		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
+
+		this.$.modalLogin.close();
+	},
+	btnCancelLogin: function() {
+		this.$.modalLogin.close();
+	},
 });
 String.prototype.toTitleCase = function() {
 	return this.replace(

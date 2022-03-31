@@ -21,3 +21,12 @@
     background-color: dimgray;
     color: white;
 }
+.browserModal {
+    padding: 20px; 
+    padding-top:30px; 
+    background-color:lightgray; 
+    border:1px solid dimgray; 
+    border-radius: 3%;
+    -moz-border-radius: 3%;
+    box-shadow: 2px 2px 3px black;
+}
