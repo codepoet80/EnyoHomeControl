@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 200000;
+updateRate = 10000;
 updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
@@ -16,7 +16,9 @@ enyo.kind({
 	accessoryData: null,
 	selectedAccessory: null,
 	currentAccessory: null,
+	defaultAccessoryCaption: "Nothing Selected",
 	components: [
+		{kind: "ApplicationEvents", onLoad: "createOrMakeConnection" },
 		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onError: "" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
 		//UI Elements
@@ -46,7 +48,7 @@ enyo.kind({
 				]},
 				{kind: "Toolbar", components: [
 					{kind: "GrabButton"},
-					{caption: "Update", onclick: "periodicUpdate"}
+					{caption: "Update", name:"btnUpdate", onclick: "periodicUpdate", disabled: true}
 				]}
 			]},
 			{name: "panelAccessories", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
@@ -71,7 +73,7 @@ enyo.kind({
 				]}
 			]},
 			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [	  
-				{name: "headerDetail", kind: "Header", content: "Nothing Selected", domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
+				{name: "headerDetail", kind: "Header", content: this.defaultAccessoryCaption, domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
 				{kind: "Pane", name:"paneController", flex:2, lazy:true, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, onSelectView: "accessoryControllerReady", components: [
 					{kind: "Controller.Default", name: "controllerDefault", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.Lightbulb", name: "controllerLightbulb", onAccessoryChanged:"accessoryChanged"},
@@ -90,7 +92,7 @@ enyo.kind({
 				{ kind: "ListSelector", value: "homebridge", name: "loginBackendType", style: "margin:10px;", items: [
 					{ caption: "HomeBridge", value: "homebridge" },
 				]},
-				{ kind: "Input", name: "loginServerPath", spellcheck: false, autoWordComplete: false, hint: "Server Path" },
+				{ kind: "Input", name: "loginServerPath", spellcheck: false, autoWordComplete: false, autoCapitalize: "lowercase", hint: "Server Path" },
 				{ kind: "Input", name: "loginUsername", disabled: false, spellcheck: false, autoWordComplete: false, autoCapitalize: "lowercase", hint: "User Name" },
 				{ kind: "PasswordInput", name: "loginPassword", disabled: false, spellcheck: false, autoWordComplete: false, autoCapitalize: "lowercase", hint: "Password" },
 			]},
@@ -116,15 +118,36 @@ enyo.kind({
 			//TODO: Loop through all elements that need classes added
 			this.$.modalLogin.addClass("browserModal");
 		}
-
+		this.$.spinnerRoom.applyStyle("display", "none");
+		this.$.spinnerAccessories.applyStyle("display", "none");
+	},
+	createOrMakeConnection: function() {
+		enyo.warn("here we are!");
+		this.server = Prefs.getCookie("server", "192.168.1.250");
+		this.username = Prefs.getCookie("username", "admin");
+		this.password = Prefs.getCookie("password", "");
+		if (this.password != "") {
+			//TODO: Make this selectable
+			this.homeHelper = this.$.myHomebridge;
+			this.loadHomeData();
+		} else {
+			this.doSignInOut();
+		}
+	},
+	loadHomeData: function() {
+		//Update UI
+		this.$.btnSignInOut.setCaption("Sign Out");
+		this.$.spinnerRoom.applyStyle("display", "inline");
+		this.$.spinnerAccessories.applyStyle("display", "inline");
+		this.$.btnUpdate.setProperty("disabled", false);
 		//Assign helper to controllers
 		for (var i=0;i<this.$.paneController.controls.length;i++) {
 			enyo.log("Assigning helper to controller: " + this.$.paneController.controls[i].name);
 			this.$.paneController.controls[i].helper = this.homeHelper;
 		}
-		//Load preferences or show dialog
-		this.$.spinnerRoom.applyStyle("display", "none");
-		this.$.spinnerAccessories.applyStyle("display", "none");
+		//Login and Load Home Layout
+		this.homeHelper.ConnectHome(this, this.server, this.username, this.password);
+		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
 	periodicUpdate: function() {
 		enyo.log("Update fired, online: " + this.online);
@@ -150,7 +173,7 @@ enyo.kind({
 			var record = this.layoutData[inIndex];
 			if (record) {
 				this.$.roomCaption.setContent(record.caption);
-				var isRowSelected = (inIndex == this.$.selectedRoom);
+				var isRowSelected = (inIndex == this.selectedRoom);
 				if (isRowSelected) {
 					this.$.roomListContainer.applyStyle("background-color", "dimgray");
 					this.$.roomListContainer.applyStyle("color", "white");
@@ -177,10 +200,10 @@ enyo.kind({
 	roomClick: function(inSender, inEvent) {
 		enyo.log("Room clicked on row: " + inEvent.rowIndex);
 		this.selectNextView();
-		if (this.$.selectedRoom != inEvent.rowIndex) {
+		if (this.selectedRoom != inEvent.rowIndex) {
 			this.roomChanged = true;
-			this.$.selectedRoom = inEvent.rowIndex;
-			this.$.selectedAccessory = null;
+			this.selectedRoom = inEvent.rowIndex;
+			this.selectedAccessory = null;
 			this.$.roomList.select(inEvent.rowIndex); //OR: this.$.roomList.refresh();
 		}
 	},
@@ -198,7 +221,7 @@ enyo.kind({
 				this.$.accessoryIcon.addClass("accessoryListItem");
 				this.$.accessoryIcon.addClass(record.class);
 				this.$.accessoryIcon.addClass(record.state);
-				var isRowSelected = (inIndex == this.$.selectedAccessory);
+				var isRowSelected = (inIndex == this.selectedAccessory);
 				this.$.accessoryListContainer.addRemoveClass("highlightedRow", isRowSelected);
 				if (isRowSelected) 
 					this.showAccessoryController(record);
@@ -209,23 +232,29 @@ enyo.kind({
 	accessoryClick: function(inSender, inEvent) {
 		enyo.log("Accessory click on row: " + inEvent.rowIndex);
 		this.selectNextView();
-		this.$.selectedAccessory = inEvent.rowIndex;
+		this.selectedAccessory = inEvent.rowIndex;
 		this.$.accessoryList.select(inEvent.rowIndex);	//OR: this.$.accessoryList.refresh();
 	},
 	showAccessoryController: function(accessory) {
-		//enyo.log(JSON.stringify(accessory));
+		//enyo.warn("Showing accessory controller for: " + JSON.stringify(accessory));
 		if (accessory && accessory.type) {
 			var useController = this.findControllerForAccessoryType(accessory.type);
 			enyo.log("Loading controller: " + useController + " for accessory type: " + accessory.type);
-	
 			this.$.headerDetail.setContent(accessory.type.toTitleCase());
 			this.$.paneController.selectViewByName(useController);
 			this.currentAccessory = accessory;
+		} else {
+			this.$.headerDetail.setContent(this.defaultAccessoryCaption);
+			this.$.paneController.selectViewByName("controllerDefault");
 		}
 	},
 	accessoryControllerReady: function (inSender, inView, inPrevious) {
-		enyo.log("Controller:" + inView.name + " ready for Accessory: " + this.currentAccessory.caption);
-		inView.setProperty("accessory", this.currentAccessory);
+		caption = "default";
+		if (this.currentAccessory && this.currentAccessory.caption) {
+			caption = this.currentAccessory.caption;
+			inView.setProperty("accessory", this.currentAccessory);
+		}
+		enyo.log("Controller:" + inView.name + " ready for Accessory: " + caption);
 	},
 	accessoryChanged: function(inSender, inEvent){
 		//find and update the accessory in the list by id
@@ -264,28 +293,42 @@ enyo.kind({
 		}
 	},
 	doSignInOut: function() {
-		if (this.$.btnSignInOut.caption == "Sign In")
+		if (this.$.btnSignInOut.caption == "Sign In") {
 			this.$.modalLogin.openAtCenter();
-		else {
-			//TODO: Clear out
-			this.$.btnSignInOut.setCaption("Sign In");
+			this.$.loginServerPath.setValue(this.server);
+			this.$.loginUsername.setValue(this.username);
+			this.$.loginPassword.setValue("");
 		}
+		else {
+			this.$.btnSignInOut.setCaption("Sign In");
+			Prefs.setCookie("password", "");
+			this.resetPanels();
+		}
+	},
+	resetPanels: function() {
+		//TODO: There's a bug here where the last selected thing is still being used on next sign-in
+		this.selectedRoom = null;
+		this.layoutData = [];
+		this.$.roomList.refresh();
+		this.selectedAccessory = null;
+		this.accessoryData = [];
+		this.$.accessoryList.refresh();
+		this.currentAccessory = null;
+		this.showAccessoryController(null);
+		this.$.slidingPane.selectViewByIndex(0);
+		this.$.btnUpdate.setProperty("disabled", true);
 	},
 	btnSaveLogin: function() {
 		this.username = this.$.loginUsername.getValue();
+		Prefs.setCookie("username", this.username);
 		this.password = this.$.loginPassword.getValue();
-		this.server = this.$.loginServerPath.getValue();
+		Prefs.setCookie("password", this.password);
 		//TODO: helper type (support for multiple back-ends)
+		this.server = this.$.loginServerPath.getValue();
+		Prefs.setCookie("server", this.server);
 		this.homeHelper = this.$.myHomebridge;
-
-		//Login and Load Home Layout
-		this.$.btnSignInOut.setCaption("Sign Out");
-		this.$.spinnerRoom.applyStyle("display", "inline");
-		this.$.spinnerAccessories.applyStyle("display", "inline");
-		this.homeHelper.ConnectHome(this, this.server, this.username, this.password);
-		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
-
 		this.$.modalLogin.close();
+		this.loadHomeData();
 	},
 	btnCancelLogin: function() {
 		this.$.modalLogin.close();

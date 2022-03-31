@@ -7,5 +7,6 @@
 	"controllers/garagedoor/ControllerGarageDoor.js",
 	"css/HomeControl.css",
 	"helpers/HomebridgeHelper.js",
+	"helpers/Prefs.js",
 	"helpers/Updater.js"
 );
