@@ -8,8 +8,9 @@ Currently supported back-ends:
 
 Planned support:
 
-+ Hoobs
 + Home Assistant
++ Hue
++ Hoobs (maybe)
 
 ## What is This?
 
@@ -19,6 +20,21 @@ Pre3 or TouchPad.
 webOS technology was acquired by LG and repurposed for TVs and IoT devices, but they made significant changes and this app will not run on those platforms.
 
 Releases of this app, and many other new and restored apps, can be found in the [webOS Archive App Museum](http://appcatalog.webosarchive.com).
+
+## Other Uses
+
+Because this Enyo application is packaged for cross-platform use, you can use it on a web server as well. However, if you do, you'll need to solve CORS. There's a few ways to work-around, but the easiest way I've found is to put a reverse proxy in front of the back-end, where you can control the CORS headers. When logging in to Home Control, give it the URL of the proxy, instead of the back-end. Here's my Apache2 config:
+
+```
+#Homebridge NodeJS service
+ProxyPass / http://192.168.1.250:80/
+ProxyPassReverse / http://192.168.1.250:80/
+
+<Location / >
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods GET,POST,PUT,DELETE,OPTIONS
+</Location>
+```
 
 ## Why?
 

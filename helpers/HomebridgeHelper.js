@@ -8,6 +8,7 @@ Homebridge Helper
 */
 name = "homebridgehelper",
 defaultHomebridgeServer = "homebridge.local";
+//TODO: handle HTTPS and CORS
 defaultHomebridgeApiUrl = "http://" + defaultHomebridgeServer + "/api/";
 enyo.kind({
     name: "Helpers.Homebridge",

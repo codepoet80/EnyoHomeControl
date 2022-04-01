@@ -1,5 +1,6 @@
 ﻿name = "homecontrol";
 updateRate = 10000;
+isUpdating = false;
 updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
@@ -152,7 +153,8 @@ enyo.kind({
 	periodicUpdate: function() {
 		enyo.log("Update fired, online: " + this.online);
 		window.clearInterval(updateInt);
-		if (this.online) {
+		if (this.online && ! isUpdating) {
+			isUpdating = true;
 			this.$.spinnerAccessories.applyStyle("display", "inline");
 			this.homeHelper.UpdateAccessories(this)
 		}
@@ -209,6 +211,7 @@ enyo.kind({
 	},
 	accessoryDataUpdated: function() {
 		enyo.log("Accessories updated on: " + this.name);
+		isUpdating = false;
 		this.$.spinnerAccessories.applyStyle("display", "none");
 		this.$.roomList.refresh();
 	},
@@ -303,6 +306,8 @@ enyo.kind({
 			this.$.btnSignInOut.setCaption("Sign In");
 			Prefs.setCookie("password", "");
 			this.resetPanels();
+			window.clearInterval(updateInt);
+			isUpdating = false;
 		}
 	},
 	resetPanels: function() {
@@ -317,6 +322,8 @@ enyo.kind({
 		this.showAccessoryController(null);
 		this.$.slidingPane.selectViewByIndex(0);
 		this.$.btnUpdate.setProperty("disabled", true);
+		this.$.spinnerRoom.applyStyle("display", "none");
+		this.$.spinnerAccessories.applyStyle("display", "none");
 	},
 	btnSaveLogin: function() {
 		this.username = this.$.loginUsername.getValue();
