@@ -35,7 +35,6 @@ ProxyPassReverse / http://192.168.1.250:80/
     Header set Access-Control-Allow-Methods GET,POST,PUT,DELETE,OPTIONS
 </Location>
 ```
-
 ## Why?
 
 Aside from being a fan of the platform, the author thinks consumers have lost out now that the smart phone ecosystem has devolved into a duopoly.
