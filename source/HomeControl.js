@@ -284,15 +284,12 @@ enyo.kind({
 		return candidateController;
 	},
     selectNextView: function () {
-		enyo.warn("width: " + window.innerWidth);
-		if (window.innerWidth < 500) {
+		if (window.innerWidth <= 500) {
 			var pane    = this.$.slidingPane;
 			var viewIdx = pane.getViewIndex();
 			if (viewIdx < pane.views.length - 1) {
 				viewIdx = viewIdx + 1;
 			} else {
-				enyo.log("no more panes, currently at " + pane.views.length);
-				pane.selectViewByIndex(pane.views.length - 1);
 				return;	// we've selected the last available view.
 			}
 			pane.selectViewByIndex(viewIdx);
