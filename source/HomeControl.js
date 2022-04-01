@@ -29,8 +29,8 @@ enyo.kind({
 			]},
 			{kind: "Button", name:"btnSignInOut", className: "enyo-button-dark", caption: "Sign In", onclick: "doSignInOut"},
 		]},
-		{name: "slidingPane", kind: "SlidingPane", flex: 1, onSelectView: "slidingSelected", components: [
-			{name: "panelRooms", width: "250px", components: [
+		{name: "slidingPane", kind: "SlidingPane", flex: 1, multiView: true, components: [
+			{name: "panelRooms", width: "300px", components: [
 				{name: "headerRoom", kind: "Header", components: [
 					{w: "fill", content:"Rooms", domStyles: {"font-weight": "bold"}},
 					{kind: "Image", flex:1, name: "spinnerRoom", src: "images/spinner.gif", domStyles: {display:"none", width: "20px"}},					
@@ -52,7 +52,7 @@ enyo.kind({
 					{caption: "Update", name:"btnUpdate", onclick: "periodicUpdate", disabled: true}
 				]}
 			]},
-			{name: "panelAccessories", width: "300px", /*fixedWidth: true,*/ peekWidth: 100, components: [
+			{name: "panelAccessories", width: "300px", /*fixedWidth: true, peekWidth: 100,*/ components: [
 				{name: "headerAccessories", kind: "Header", components: [
 					{w: "fill", content:"Accessories", domStyles: {"font-weight": "bold"}},
 					{kind: "Image", flex:1, name: "spinnerAccessories", src: "images/spinner.gif", domStyles: {display:"none", width: "20px"}},					
@@ -73,9 +73,9 @@ enyo.kind({
 					{kind: "GrabButton"},
 				]}
 			]},
-			{name: "panelDetail", flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize", components: [	  
+			{name: "panelDetail", /*flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize",*/ components: [	  
 				{name: "headerDetail", kind: "Header", content: this.defaultAccessoryCaption, domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
-				{kind: "Pane", name:"paneController", flex:2, lazy:true, transitionKind: "enyo.transitions.LeftRightFlyin" /*or .Fade*/, onSelectView: "accessoryControllerReady", components: [
+				{kind: "Pane", name:"paneController", flex:2, lazy:false, /*transitionKind: "enyo.transitions.LeftRightFlyin",*/ /*or .Fade*/ onSelectView: "accessoryControllerReady", components: [
 					{kind: "Controller.Default", name: "controllerDefault", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.Lightbulb", name: "controllerLightbulb", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.Colorbulb", name: "controllerColorbulb", onAccessoryChanged:"accessoryChanged"},
@@ -283,13 +283,16 @@ enyo.kind({
 		}
 		return candidateController;
 	},
-	selectNextView: function () {
-		if (this.environment && this.environment.modelName.toLowerCase() != "touchpad") {
+    selectNextView: function () {
+		enyo.warn("width: " + window.innerWidth);
+		if (window.innerWidth < 500) {
 			var pane    = this.$.slidingPane;
 			var viewIdx = pane.getViewIndex();
 			if (viewIdx < pane.views.length - 1) {
 				viewIdx = viewIdx + 1;
 			} else {
+				enyo.log("no more panes, currently at " + pane.views.length);
+				pane.selectViewByIndex(pane.views.length - 1);
 				return;	// we've selected the last available view.
 			}
 			pane.selectViewByIndex(viewIdx);
