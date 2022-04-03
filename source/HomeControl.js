@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 10000;
+updateRate = 20000000;
 isUpdating = false;
 updateInt = null;
 enyo.kind({
@@ -151,7 +151,7 @@ enyo.kind({
 		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
 	},
 	periodicUpdate: function() {
-		enyo.log("Update fired, online: " + this.online);
+		enyo.log("Update fired, online: " + this.online + " next update in " + updateRate + " ms");
 		window.clearInterval(updateInt);
 		if (this.online && ! isUpdating) {
 			isUpdating = true;
@@ -206,7 +206,7 @@ enyo.kind({
 			this.roomChanged = true;
 			this.selectedRoom = inEvent.rowIndex;
 			this.selectedAccessory = null;
-			this.$.roomList.select(inEvent.rowIndex); //OR: this.$.roomList.refresh();
+			this.$.roomList.refresh();	//OR: this.$.roomList.select(inEvent.rowIndex);
 		}
 	},
 	accessoryDataUpdated: function() {
@@ -219,6 +219,7 @@ enyo.kind({
 		if (this.accessoryData && this.accessoryData.length > 0) {
 			var record = this.accessoryData[inIndex];
 			if (record) {
+				//enyo.log("Rendering accessory record as row: " + inIndex);
 				this.$.accessoryCaption.setContent(record.caption || record.uniqueId);
 				this.$.accessoryIcon.setClassName("enyo-checkbox");
 				this.$.accessoryIcon.addClass("accessoryListItem");
@@ -230,13 +231,15 @@ enyo.kind({
 					this.showAccessoryController(record);
 				return true;
 			}
+		} else {
+			enyo.warn("Not rendering accessory list because there are no accessories.")
 		}
 	},
 	accessoryClick: function(inSender, inEvent) {
 		enyo.log("Accessory click on row: " + inEvent.rowIndex);
 		this.selectNextView();
 		this.selectedAccessory = inEvent.rowIndex;
-		this.$.accessoryList.select(inEvent.rowIndex);	//OR: this.$.accessoryList.refresh();
+		this.$.accessoryList.refresh();	//OR: this.$.accessoryList.select(inEvent.rowIndex);
 	},
 	showAccessoryController: function(accessory) {
 		//enyo.warn("Showing accessory controller for: " + JSON.stringify(accessory));
