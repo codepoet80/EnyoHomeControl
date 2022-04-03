@@ -131,6 +131,7 @@ enyo.kind({
 		if (this.password != "") {
 			//TODO: Make this selectable
 			this.homeHelper = this.$.myHomebridge;
+			this.homeHelper.useSecure = document.location.protocol == 'https:';
 			this.loadHomeData();
 		} else {
 			this.doSignInOut();

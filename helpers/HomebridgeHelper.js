@@ -8,11 +8,12 @@ Homebridge Helper
 */
 name = "homebridgehelper",
 defaultHomebridgeServer = "homebridge.local";
-//TODO: handle HTTPS and CORS
-defaultHomebridgeApiUrl = "http://" + defaultHomebridgeServer + "/api/";
+//TODO: handle CORS
+defaultHomebridgeApiUrl = defaultHomebridgeServer + "/api/";
 enyo.kind({
     name: "Helpers.Homebridge",
     kind: "Control",
+    useSecure: false,
     //#region Public
     //  This stuff must be implemented to support the UI, but the details of the implementation are up to you
     published: {
@@ -32,6 +33,10 @@ enyo.kind({
     ConnectHome: function(sender, server, user, pass) {
         if (server)
             this.currentHomebridgeApiUrl = this.currentHomebridgeApiUrl.replace("homebridge.local", server);
+        if (this.useSecure)
+            this.currentHomebridgeApiUrl = "https://" + this.currentHomebridgeApiUrl;
+        else
+            this.currentHomebridgeApiUrl = "http://" + this.currentHomebridgeApiUrl;
         enyo.log("Homebridge Helper is trying to get data from server " + this.currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
 
         this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});
