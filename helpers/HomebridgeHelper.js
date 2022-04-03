@@ -37,6 +37,9 @@ enyo.kind({
             this.currentHomebridgeApiUrl = "https://" + this.currentHomebridgeApiUrl;
         else
             this.currentHomebridgeApiUrl = "http://" + this.currentHomebridgeApiUrl;
+        if (browserSupportsCors()) {
+            enyo.warn("This browser enforces CORS, but Homebridge does not allow it and must be circumvented!");
+        }
         enyo.log("Homebridge Helper is trying to get data from server " + this.currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
 
         this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});
@@ -301,3 +304,12 @@ enyo.kind({
     }
     //#endregion
 });
+
+function browserSupportsCors() {
+	if ("withCredentials" in new XMLHttpRequest())
+		return true;	
+	else if (window.XDomainRequest)
+		return true;
+	else
+		return false;
+}
