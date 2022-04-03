@@ -1,6 +1,7 @@
 ﻿name = "homecontrol";
-updateRate = 20000000;
+updateRate = 10000;
 isUpdating = false;
+cancelUpdate = false;
 updateInt = null;
 enyo.kind({
 	name: "enyo.HomeControl",
@@ -188,9 +189,14 @@ enyo.kind({
 						enyo.log("refreshing room list because of background sync");
 					}
 					//Load the accessory list for the selected room
-					enyo.log("Get accessory data for room: " + record.uniqueId);
-					this.accessoryData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueId, true);
-					this.$.accessoryList.refresh();
+					if (!cancelUpdate) {
+						enyo.log("Get accessory data for room: " + record.uniqueId);
+						this.accessoryData = this.homeHelper.GetAccessoryDataForRoom(record.uniqueId, true);
+						this.$.accessoryList.refresh();
+					} else {
+						enyo.log("Skipping accessory refresh due to cancelled update; awaiting next sync.");
+					}
+					cancelUpdate = false;
 				} else {
 					this.$.roomListContainer.applyStyle("background-color", null);
 					this.$.roomListContainer.applyStyle("color", null);
@@ -263,6 +269,8 @@ enyo.kind({
 		enyo.log("Controller:" + inView.name + " ready for Accessory: " + caption);
 	},
 	accessoryChanged: function(inSender, inEvent){
+		//abandon any background syncs since they might not have this update in them yet
+		cancelUpdate = true;
 		//find and update the accessory in the list by id
 		for (var i=0;i<this.accessoryData.length;i++) {
 			if (this.accessoryData[i].uniqueId == inSender.accessory.uniqueId)
