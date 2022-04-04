@@ -19,8 +19,8 @@ enyo.kind({
 	create: function() {
 		this.inherited(arguments);
 		enyo.warn(this.name + " created!");
-		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.4) + "px");
-		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.4) + "px");
+		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.35) + "px");
+		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.35) + "px");
 		this.accessoryChanged();
 	},
 	stateChanged: function(oldState) {	//This is a UI function only, to actually change the accessory value, call the Helper
@@ -60,7 +60,7 @@ enyo.kind({
 			]},
 			{w: "fill", name: "captionDetail", content: "Light Controller", domStyles: {"text-align": "center", "margin-left": "100px", "margin-right": "100px"}},
 			{kind: "VFlexBox", pack: "center", components: [
-				{content: "Brightness", domStyles: {"margin-left": "15%"} },
+				{content: "Brightness", domStyles: {"margin-top:10px;margin-left": "15%"} },
 				{kind: "Slider", name: "sliderBright", title:"Brightness", onChange: "dimmerChanged", domStyles: {width: "70%", "margin-left": "auto", "margin-right": "auto"}},
 			]},
 			{kind: "VFlexBox", pack: "center", components: [

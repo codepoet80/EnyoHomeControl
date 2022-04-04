@@ -19,8 +19,8 @@ enyo.kind({
 	create: function() {
 		this.inherited(arguments);
 		enyo.warn(this.name + " created!");
-		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.4) + "px");
-		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.4) + "px");
+		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.35) + "px");
+		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.35) + "px");
 		this.accessoryChanged();
 	},
 	stateChanged: function(oldState) {	//This is a UI function only, to actually change the accessory value, call the Helper

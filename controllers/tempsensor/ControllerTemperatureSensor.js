@@ -17,5 +17,7 @@ enyo.kind({
 	create: function() {
 		this.inherited(arguments);
 		enyo.warn(this.name + " created!");
+		this.$.imageDetail.applyStyle("height", (window.innerHeight * 0.35) + "px");
+		this.$.imageDetail.applyStyle("width", (window.innerHeight * 0.35) + "px");
 	},
 });
