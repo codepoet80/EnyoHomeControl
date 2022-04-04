@@ -111,6 +111,8 @@ enyo.kind({
 		this.environment = enyo.fetchDeviceInfo();
 		if (this.environment)
 			this.$.myUpdater.CheckForUpdate("Home Control");
+		if (window.cordova && window.cordova.platformId)
+			enyo.log("Cordova platform: " + window.cordova.platformId)
 		if (window.location.hostname && window.location.hostname.indexOf(".media.cryptofs.apps") != -1) {   // Running on webOS
 			enyo.log("webOS environment detected");
 		} else if(window.location.href.indexOf("file:///media/cryptofs") != -1) { // Running on LuneOS
