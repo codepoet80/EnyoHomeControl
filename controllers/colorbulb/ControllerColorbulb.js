@@ -60,16 +60,16 @@ enyo.kind({
 			]},
 			{w: "fill", name: "captionDetail", content: "Light Controller", domStyles: {"text-align": "center", "margin-left": "100px", "margin-right": "100px"}},
 			{kind: "VFlexBox", pack: "center", components: [
+				{content: "Brightness", domStyles: {"margin-left": "15%"} },
+				{kind: "Slider", name: "sliderBright", title:"Brightness", onChange: "dimmerChanged", domStyles: {width: "70%", "margin-left": "auto", "margin-right": "auto"}},
+			]},
+			{kind: "VFlexBox", pack: "center", components: [
 				{content: "Hue", domStyles: {"margin-left": "15%"}},
 				{kind: "Slider", name: "sliderHue", title: "Hue", onChange: "dimmerChanged", domStyles: { width:"70%", "margin-left": "auto", "margin-right": "auto"}},
 			]},
 			{kind: "VFlexBox", pack: "center", components: [
 				{content: "Saturation", domStyles: {"margin-left": "15%"} },
 				{kind: "Slider", name: "sliderSaturation", title: "Saturation", onChange: "dimmerChanged", domStyles: {width: "70%", "margin-left": "auto", "margin-right": "auto"}},
-			]},
-			{kind: "VFlexBox", pack: "center", components: [
-				{content: "Brightness", domStyles: {"margin-left": "15%"} },
-				{kind: "Slider", name: "sliderBright", title:"Brightness", onChange: "dimmerChanged", domStyles: {width: "70%", "margin-left": "auto", "margin-right": "auto"}},
 			]},
 		]}
 	],
