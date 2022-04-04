@@ -8,7 +8,6 @@ Homebridge Helper
 */
 name = "homebridgehelper",
 defaultHomebridgeServer = "homebridge.local";
-//TODO: handle CORS
 defaultHomebridgeApiUrl = defaultHomebridgeServer + "/api/";
 enyo.kind({
     name: "Helpers.Homebridge",
@@ -37,11 +36,15 @@ enyo.kind({
             this.currentHomebridgeApiUrl = "https://" + this.currentHomebridgeApiUrl;
         else
             this.currentHomebridgeApiUrl = "http://" + this.currentHomebridgeApiUrl;
+        //TODO: Allow user to specify their own approach to CORS
         if (browserSupportsCors()) {
             enyo.warn("This browser enforces CORS, but Homebridge does not allow it and must be circumvented!");
+            if(window.location.href.indexOf("http://") != -1 || window.location.href.indexOf("https://") != -1) {
+                enyo.log("Detected web environment, trying PHP CORS proxy");
+                this.currentHomebridgeApiUrl = "cors.php?csurl=" + this.currentHomebridgeApiUrl;
+            }
         }
         enyo.log("Homebridge Helper is trying to get data from server " + this.currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
-
         this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});
     },
     GetHomeLayout: function() { //Just the layout of the home (eg: rooms or zones)
@@ -82,7 +85,7 @@ enyo.kind({
                 for (var j=0;j<services.length;j++) {
                     if (services[j].uniqueId) {
                         //enyo.log("Updating accessory: " + services[j].uniqueId);
-                        this.$.getAccessory.setUrl(this.currentHomebridgeApiUrl + "/accessories/" + services[j].uniqueId);
+                        this.$.getAccessory.setUrl(this.currentHomebridgeApiUrl + "accessories/" + services[j].uniqueId);
                         this.callServiceWithLatestProps(this.$.getAccessory, null, {"Authorization": "Bearer " + this.bearerToken});
                         this.refreshCount++;
                     }
@@ -306,10 +309,15 @@ enyo.kind({
 });
 
 function browserSupportsCors() {
-	if ("withCredentials" in new XMLHttpRequest())
-		return true;	
-	else if (window.XDomainRequest)
-		return true;
-	else
-		return false;
+    //Detect browser support for CORS
+    if ('withCredentials' in new XMLHttpRequest()) {
+        /* supports cross-domain requests */
+        return true;
+    }
+    else if(typeof XDomainRequest !== "undefined"){
+        return true;
+    }else{
+        //Time to retreat with a fallback or polyfill
+        return false;
+    }
 }

@@ -124,7 +124,6 @@ enyo.kind({
 		this.$.spinnerAccessories.applyStyle("display", "none");
 	},
 	createOrMakeConnection: function() {
-		enyo.warn("here we are!");
 		this.server = Prefs.getCookie("server", "192.168.1.250");
 		this.username = Prefs.getCookie("username", "admin");
 		this.password = Prefs.getCookie("password", "");
