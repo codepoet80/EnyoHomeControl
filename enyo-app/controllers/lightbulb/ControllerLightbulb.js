@@ -62,6 +62,8 @@ enyo.kind({
 
 	],
 	lightControlClick: function(inSender, inEvent){
+		inEvent.stopImmediatePropagation();
+
 		enyo.log(this.name + " saw " + this.SupportedAccessories[0] + " clicked for ID: " + JSON.stringify(this.accessory.uniqueId));
 		var newState = !this.state;
 		this.state = newState;

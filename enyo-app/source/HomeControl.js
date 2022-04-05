@@ -26,7 +26,7 @@ enyo.kind({
 		//UI Elements
 		{kind: "PageHeader", className: "enyo-header-dark", components: [
 			{kind: "VFlexBox", flex: 1, align: "center", components: [
-				{content: "Home Control", domStyles: {"font-weight": "bold"}},
+				{name:"txtTitle", content: "Home Control", domStyles: {"font-weight": "bold"}},
 			]},
 			{kind: "Button", name:"btnSignInOut", className: "enyo-button-dark", caption: "Sign In", onclick: "doSignInOut"},
 		]},
@@ -38,7 +38,7 @@ enyo.kind({
 				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "roomList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderRoomRow", components: [
-						{kind: "Item", className: "item", title: "", onclick: "roomClick", /*Xonmousedown: "roomClick",*/ components: [
+						{kind: "Item", className: "item", title: "", tapHighlight:true, onclick: "roomClick", /*onmousedown: "roomClick",*/ components: [
 							{w: "fill", name:"roomListContainer", domStyles: {margin: "-12px", padding: "12px"}, components: [
 								{kind: "HFlexBox", components: [
 									{name: "roomCaption", flex: 2, domStyles: {overflow: "hidden", "text-overflow": "ellipsis"} },
@@ -60,7 +60,7 @@ enyo.kind({
 				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "accessoryList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderAccessoryList", components: [
-						{kind: "Item", className: "item", onclick: "accessoryClick", /*Xonmousedown: "accessoryClick",*/ components: [
+						{kind: "Item", className: "item", tapHighlight:true, onclick: "accessoryClick", /*onmousedown: "accessoryClick",*/ components: [
 							{w: "fill", name:"accessoryListContainer", domStyles: {margin: "-12px", padding: "12px", "align-items": "center"}, components: [
 								{kind: "HFlexBox", components: [
 									{kind: "CheckBox", flex: 1, name: "accessoryIcon", content:" ", className: "accessoryListItem", domStyles: {width: "30px"} },
@@ -208,7 +208,7 @@ enyo.kind({
 		}
 	},
 	roomClick: function(inSender, inEvent) {
-		enyo.log("Room clicked on row: " + inEvent.rowIndex);
+		enyo.warn("Room clicked on row: " + inEvent.rowIndex);
 		this.selectNextView();
 		if (this.selectedRoom != inEvent.rowIndex) {
 			this.roomChanged = true;
@@ -216,6 +216,7 @@ enyo.kind({
 			this.selectedAccessory = null;
 			this.$.roomList.refresh();	//OR: this.$.roomList.select(inEvent.rowIndex);
 		}
+		inEvent.stopImmediatePropagation();
 	},
 	accessoryDataUpdated: function() {
 		enyo.log("Accessories updated on: " + this.name);
@@ -248,6 +249,7 @@ enyo.kind({
 		this.selectNextView();
 		this.selectedAccessory = inEvent.rowIndex;
 		this.$.accessoryList.refresh();	//OR: this.$.accessoryList.select(inEvent.rowIndex);
+		inEvent.stopImmediatePropagation();
 	},
 	showAccessoryController: function(accessory) {
 		//enyo.warn("Showing accessory controller for: " + JSON.stringify(accessory));

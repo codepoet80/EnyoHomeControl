@@ -5,8 +5,7 @@ mkdir $mydir/bin/ -p
 
 if [ "$1" = "clean" ]; then
     echo -n "Cleaning up..."
-    rm -rf $mydir/bin/*.ipk
-    rm -rf $mydir/bin/www/*
+    rm -rf $mydir/bin/*
     rm -rf $mydir/enyo-app/deploy/*
     rm -rf $mydir/enyo-app/build/*
     echo "Done!"
