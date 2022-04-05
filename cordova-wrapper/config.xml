@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.enyo.myapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Enyo1 App</name>
-    <description>Sample Enyo1 Cordova App</description>
+    <name>Home Control</name>
+    <description>Home automation controller</description>
     <author email="curator@webosarchive.com" href="http://www.webosarchive.com">
         webOS Archive
     </author>
