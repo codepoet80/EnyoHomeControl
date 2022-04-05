@@ -3,6 +3,7 @@ updateRate = 10000;
 isUpdating = false;
 cancelUpdate = false;
 updateInt = null;
+defaultAccessoryCaption = "Nothing Selected";
 enyo.kind({
 	name: "enyo.HomeControl",
 	kind: enyo.VFlexBox,
@@ -18,7 +19,6 @@ enyo.kind({
 	accessoryData: null,
 	selectedAccessory: null,
 	currentAccessory: null,
-	defaultAccessoryCaption: "Nothing Selected",
 	components: [
 		{kind: "ApplicationEvents", onLoad: "createOrMakeConnection" },
 		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onError: "" },
@@ -53,10 +53,10 @@ enyo.kind({
 					{caption: "Update", name:"btnUpdate", onclick: "periodicUpdate", disabled: true}
 				]}
 			]},
-			{name: "panelAccessories", width: "300px", /*fixedWidth: true, peekWidth: 100,*/ components: [
+			{name: "panelAccessories", width: "300px", components: [
 				{name: "headerAccessories", kind: "Header", components: [
-					{w: "fill", content:"Accessories", domStyles: {"font-weight": "bold"}},
-					{kind: "Image", flex:1, name: "spinnerAccessories", src: "images/spinner.gif", domStyles: {display:"none", width: "20px"}},					
+					{content:"Accessories", flex:2, domStyles: {"font-weight": "bold"}},
+					{kind: "Image", name: "spinnerAccessories", src: "images/spinner.gif", domStyles: {display:"none", width: "20px"}},					
 				]},
 				{kind: "Scroller", flex:1, domStyles: {"margin-top": "0px", "min-width": "130px"}, components: [
 					{flex: 1, name: "accessoryList", kind: enyo.VirtualList, className: "list", onSetupRow: "renderAccessoryList", components: [
@@ -75,7 +75,10 @@ enyo.kind({
 				]}
 			]},
 			{name: "panelDetail", /*flex: 2, dismissible: false, peekWidth:210, onHide: "rightHide", onShow: "rightShow", onResize: "slidingResize",*/ components: [	  
-				{name: "headerDetail", kind: "Header", content: this.defaultAccessoryCaption, domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
+				{kind: "Header", components: [
+					{content:defaultAccessoryCaption, name: "headerDetail", domStyles: {"font-weight": "bold", overflow: "hidden", "text-overflow": "ellipsis"}},
+				]},
+					
 				{kind: "Pane", name:"paneController", flex:2, lazy:false, /*transitionKind: "enyo.transitions.LeftRightFlyin",*/ /*or .Fade*/ onSelectView: "accessoryControllerReady", components: [
 					{kind: "Controller.Default", name: "controllerDefault", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.Lightbulb", name: "controllerLightbulb", onAccessoryChanged:"accessoryChanged"},
@@ -231,8 +234,9 @@ enyo.kind({
 				//enyo.log("Rendering accessory record as row: " + inIndex);
 				this.$.accessoryCaption.setContent(record.caption || record.uniqueId);
 				this.$.accessoryIcon.setClassName("enyo-checkbox");
-				this.$.accessoryIcon.addClass("accessoryListItem");
+				this.$.accessoryIcon.addClass("accessoryListIcon");
 				this.$.accessoryIcon.addClass(record.class);
+				this.$.accessoryIcon.setChecked(record.state);
 				this.$.accessoryIcon.addClass(record.state);
 				var isRowSelected = (inIndex == this.selectedAccessory);
 				this.$.accessoryListContainer.addRemoveClass("highlightedRow", isRowSelected);
@@ -260,7 +264,7 @@ enyo.kind({
 			this.$.paneController.selectViewByName(useController);
 			this.currentAccessory = accessory;
 		} else {
-			this.$.headerDetail.setContent(this.defaultAccessoryCaption);
+			this.$.headerDetail.setContent(defaultAccessoryCaption);
 			this.$.paneController.selectViewByName("controllerDefault");
 		}
 	},

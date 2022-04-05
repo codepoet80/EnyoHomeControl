@@ -1,21 +1,27 @@
-﻿.accessoryListItem {
-    width: "30px";
+﻿.accessoryListIcon {
+    width: 32px;
+    height: 32px;
     vertical-align: "middle";
 }
 .defaultAccessory {
     background-image: url("../images/accessory.png");
+    background-size: 32px 32px;
 }
 .light {
     background-image: url("../images/light-icon.png");
+    background-size: 32px 32px;
 }
 .light.true {
     background-image: url("../images/light-icon-true.png") !important;
+    background-size: 32px 32px;
 }
 .door {
     background-image: url("../images/door-icon.png");
+    background-size: 32px 32px;
 }
 .door.true {
     background-image: url("../images/door-icon-true.png") !important;
+    background-size: 32px 32px;
 }
 .highlightedRow {
     background-color: dimgray;
