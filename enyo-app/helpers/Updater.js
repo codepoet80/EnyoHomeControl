@@ -76,7 +76,7 @@ enyo.kind({
     components: [{
             name: "updateServiceCheck",
             kind: "WebService",
-            url: "http://appcatalog.webosarchive.com/WebService/getLatestVersionInfo.php?app=",
+            url: "http://appcatalog.webosarchive.org/WebService/getLatestVersionInfo.php?app=",
             onSuccess: "updateCheckSuccess",
             onFailure: "updateCheckFailure"
         },
