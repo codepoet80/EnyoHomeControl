@@ -36,21 +36,8 @@ enyo.kind({
             this.currentHomebridgeApiUrl = "http://" + this.currentHomebridgeApiUrl;
         if (this.useSecure)
             this.currentHomebridgeApiUrl = this.currentHomebridgeApiUrl.replace("http://", "https://");
-        //TODO: Allow user to specify their own approach to CORS
         if (browserSupportsCors()) {
             enyo.warn("This browser enforces CORS, but Homebridge does not allow it and must be circumvented!");
-            if(window.location.href.indexOf("http://") != -1 || window.location.href.indexOf("https://") != -1) {
-                tryPhpCors = true;
-                if (window.cordova && window.cordova.platformId && window.cordova.platformId == "android")
-                {
-                    enyo.log("Detected Android environment, cannot support PHP CORS proxy");
-                    tryPhpCors = false;
-                }
-                if (tryPhpCors) {
-                    enyo.log("Detected web environment, trying PHP CORS proxy");
-                    this.currentHomebridgeApiUrl = "cors.php?csurl=" + this.currentHomebridgeApiUrl;
-                }
-            }
         }
         enyo.log("Homebridge Helper is trying to get data from server " + this.currentHomebridgeApiUrl + " with credentials: " + user + ", " + pass + " for sender: " + sender.name);
         this.callServiceWithLatestProps(this.$.doLogin, {username: user, password: pass});

@@ -26,7 +26,7 @@ Releases of this app, and many other new and restored apps, can be found in the 
 Because this Enyo application is packaged for [cross-platform use](https://github.com/codepoet80/enyo1-bootplate), you can use it on a web server as well. However, if you do, you'll need to solve CORS. There's a few ways to work-around, but the easiest way I've found is to put a reverse proxy in front of the back-end, where you can control the CORS headers. When logging in to Home Control, give it the URL of the proxy, instead of the back-end. Here's my Apache2 config:
 
 ```
-#Homebridge NodeJS service
+#Homebridge NodeJS service proxy
 ProxyPass / http://192.168.1.250:80/
 ProxyPassReverse / http://192.168.1.250:80/
 
@@ -34,6 +34,16 @@ ProxyPassReverse / http://192.168.1.250:80/
     Header set Access-Control-Allow-Origin "*"
     Header set Access-Control-Allow-Methods GET,POST,PUT,DELETE,OPTIONS
 </Location>
+```
+
+And my nginx equivalent:
+
+```
+#Homebridge NodeJS service proxy
+location / {
+        add_header Access-Control-Allow-Origin *;
+        proxy_pass http://192.168.1.250:80/;
+}
 ```
 ## Why?
 

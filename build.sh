@@ -79,6 +79,9 @@ if [ $android -eq 1 ]; then
     cp $mydir/cordova-wrapper/platforms/android/app/build/outputs/apk/debug/*.apk $mydir/bin/
 fi
 
+# Put cordova back
+cp $mydir/cordova-www.js $mydir/enyo-app/cordova.js -f
+
 echo
 echo "Build output at: $mydir/bin/"
 ls $mydir/bin/
