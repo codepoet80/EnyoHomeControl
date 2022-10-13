@@ -2,7 +2,7 @@
 Homebridge Helper
  Version 0.1
  Created: 2022
- Author: Jonathan Wise
+ Author: Jon W
  License: MIT
  Description: A helper to interact with Homebridge for home automation
 */
