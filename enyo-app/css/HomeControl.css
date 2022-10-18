@@ -15,6 +15,15 @@
     background-image: url("../images/light-icon-true.png") !important;
     background-size: 32px 32px;
 }
+.outlet {
+    background-image: url("../images/outlet-icon.png");
+    background-size: 32px 32px;
+}
+.outlet.true {
+    background-image: url("../images/outlet-icon-true.png") !important;
+    background-size: 32px 32px;
+}
+
 .door {
     background-image: url("../images/door-icon.png");
     background-size: 32px 32px;

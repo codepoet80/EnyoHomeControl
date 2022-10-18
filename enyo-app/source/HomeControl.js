@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 10000;
+updateRate = 100000;
 isUpdating = false;
 cancelUpdate = false;
 updateInt = null;
@@ -21,7 +21,7 @@ enyo.kind({
 	currentAccessory: null,
 	components: [
 		{kind: "ApplicationEvents", onLoad: "createOrMakeConnection" },
-		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onError: "" },
+		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onError: "homeDataError" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
 		//UI Elements
 		{kind: "PageHeader", className: "enyo-header-dark", components: [
@@ -81,8 +81,10 @@ enyo.kind({
 					
 				{kind: "Pane", name:"paneController", flex:2, lazy:false, /*transitionKind: "enyo.transitions.LeftRightFlyin",*/ /*or .Fade*/ onSelectView: "accessoryControllerReady", components: [
 					{kind: "Controller.Default", name: "controllerDefault", onAccessoryChanged:"accessoryChanged"},
+					{kind: "Controller.Outlet", name: "controllerOutlet", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.Lightbulb", name: "controllerLightbulb", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.Colorbulb", name: "controllerColorbulb", onAccessoryChanged:"accessoryChanged"},
+					{kind: "Controller.BasicSensor", name: "controllerBasicSensor", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.GarageDoor", name: "controllerGarageDoor", onAccessoryChanged:"accessoryChanged"}
 				]},
@@ -106,6 +108,13 @@ enyo.kind({
 				{ kind: "Button", flex: 1, caption: "Cancel", onclick: "btnCancelLogin" }
 			]}
 		 ]},
+		 { kind: "ModalDialog", name: "modalError", onOpen: "errorDialogOpen", components: [
+			{ name: "errorTitle", style: "text-align:center; margin-bottom: 10px; font-weight: bold;" },
+			{ name: "errorMessage", kind: "HtmlContent" },
+			{ kind: "HFlexBox", align: "middle", style:"margin-top:10px", components: [
+				{ kind: "Button", flex: 1, caption: "OK", onclick: "errorDialogClose" },
+			]}
+		 ]},
 	],
 	create: function() {
 		this.inherited(arguments);
@@ -124,6 +133,7 @@ enyo.kind({
 			enyo.warn("embedded environment not detected, assuming a web server!");
 			//TODO: Loop through all elements that need classes added
 			this.$.modalLogin.addClass("browserModal");
+			this.$.modalError.addClass("browserModal");
 		}
 		this.$.spinnerRoom.applyStyle("display", "none");
 		this.$.spinnerAccessories.applyStyle("display", "none");
@@ -175,6 +185,16 @@ enyo.kind({
 
 		enyo.log("Calling for updated accessory data on: " + this.name);
 		this.homeHelper.UpdateAccessories(this);
+	},
+	homeDataError: function(inSender, errorMessage, errorData, isFatal) {
+		if (isFatal) {
+			//stop periodic update if errors are fatal
+			enyo.warn("Fatal error occured, stopping periodic update!");
+			window.clearInterval(updateInt);
+		}
+		this.showError("Error", errorMessage);
+		enyo.log(inSender);
+		enyo.log(errorData);
 	},
 	renderRoomRow: function(inSender, inIndex) {
 		if (this.layoutData && this.layoutData.length > 0) {
@@ -329,6 +349,14 @@ enyo.kind({
 			isUpdating = false;
 		}
 	},
+	showError: function(title, message) {
+		this.$.modalError.openAtCenter();
+		this.$.errorTitle.setContent(title || "Error");
+		this.$.errorMessage.setContent(message);		
+	},
+	errorDialogClose: function() {
+		this.$.modalError.close();
+	},
 	resetPanels: function() {
 		//TODO: There's a bug here where the last selected thing is still being used on next sign-in
 		this.selectedRoom = null;
@@ -349,9 +377,10 @@ enyo.kind({
 		Prefs.setCookie("username", this.username);
 		this.password = this.$.loginPassword.getValue();
 		Prefs.setCookie("password", this.password);
-		//TODO: helper type (support for multiple back-ends)
 		this.server = this.$.loginServerPath.getValue();
 		Prefs.setCookie("server", this.server);
+		enyo.log("server: ", this.server, this.$.loginServerPath.getValue())
+		//TODO: helper type (support for multiple back-ends)
 		this.homeHelper = this.$.myHomebridge;
 		this.$.modalLogin.close();
 		this.loadHomeData();

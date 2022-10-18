@@ -30,8 +30,11 @@ enyo.kind({
         this.currentHomebridgeApiUrl = defaultHomebridgeApiUrl;
     },
     ConnectHome: function(sender, server, user, pass) {
+        enyo.warn("Connect called with server: " + server);
         if (server)
-            this.currentHomebridgeApiUrl = this.currentHomebridgeApiUrl.replace("homebridge.local", server);
+            this.currentHomebridgeApiUrl = server + "/api/";
+        if (server.indexOf("/") == -1)
+            this.currentHomebridgeApiUrl = this.currentHomebridgeApiUrl + "/";
         if (this.currentHomebridgeApiUrl.indexOf("http://") == -1 && this.currentHomebridgeApiUrl.indexOf("https://") == -1)
             this.currentHomebridgeApiUrl = "http://" + this.currentHomebridgeApiUrl;
         if (this.useSecure)
@@ -94,6 +97,18 @@ enyo.kind({
         //TODO: Privatize
         var putData = null;
         switch (type) {
+            case "outlet": 
+                switch (setting) {
+                    default:
+                        var putData = {
+                            "characteristicType": "On",
+                            "value": "0"
+                        }
+                        if (value)
+                            putData.value = "1";
+                        break;
+                }
+                break;
             case "lightbulb": 
                 switch (setting) {
                     case "amount":
@@ -209,6 +224,17 @@ enyo.kind({
 	},
     loginFailure: function(inSender, inResponse, inRequest) {
         enyo.error("Homebridge Helper hit an error during login");
+        enyo.log(inResponse);
+        if (inResponse.statusCode == 403)
+            this.doError("Login forbidden (error code 403). Check your username and password!", inResponse, true);
+        else {
+            if (browserSupportsCors()) {
+                this.doError("Login failed. Check the URL of the server, and ensure that you are not being blocked by CORS!", inResponse, true);
+            }
+            else {
+                this.doError("Login failed. Check the URL of the server.", inResponse, true);                
+            }
+        }   
 	},
     getHomeData: function(inSender) {
         this.callServiceWithLatestProps(this.$.getLayout, null, {"Authorization": "Bearer " + this.bearerToken})
@@ -230,6 +256,7 @@ enyo.kind({
     },
     getLayoutFailure: function(inSender, inResponse, inRequest) {
         enyo.error("Homebridge Helper hit an error getting home layout");
+        enyo.error("data: " + JSON.stringify(inResponse));
     },
     getAccessorySuccess: function(inSender, inResponse, inRequest) {
         var augmentedData = this.homeData;
@@ -255,6 +282,9 @@ enyo.kind({
         if (data.type) {
             if (data.serviceName)
                 accessory.caption = data.serviceName;
+            //Special case
+            if (data.accessoryInformation && data.accessoryInformation.Model && data.accessoryInformation.Model == "LightGroup")
+                accessory.caption = "Light Group";
             accessory.class = "defaultAccessory";
             if (data.type) {
                 accessory.type = data.type.toLowerCase();
@@ -273,6 +303,11 @@ enyo.kind({
                         accessory.condition = null;
                         accessory.class = "light";
                         break;
+                    case "outlet":
+                        accessory.state = Boolean(data.values.On);
+                        accessory.condition = null;
+                        accessory.class = "outlet";
+                        break;
                     case "garagedooropener":
                         accessory.type = "garagedoor";
                         accessory.state = !Boolean(data.values.CurrentDoorState);
@@ -283,9 +318,19 @@ enyo.kind({
                         accessory.condition = !Boolean(data.values.ObstructionDetected);
                         accessory.class = "door";
                         break;
+                    case "temperaturesensor":
+                        accessory.type = "temperaturesensor";
+                        accessory.amount = data.serviceCharacteristics[0].value;
+                        break;
                     default:
-                        enyo.log("HomebridgeHelper found an accessory of unknown type: " + data.type);
-                        accessory.type = "unknown";
+                        if (data.type.toLowerCase().indexOf("sensor") != -1) {
+                            accessory.type = "basicsensor";
+                            enyo.log("Handling basic sensor: " + JSON.stringify(data));
+                        } else {
+                            enyo.log("HomebridgeHelper found an accessory of unknown type: " + data.type);
+                            accessory.type = "unknown";
+                        }
+                        break;
                 }
             }
         }

@@ -1,8 +1,10 @@
 ﻿enyo.depends(
 	"source/HomeControl.js",
 	"controllers/ControllerDefault.js",
+	"controllers/outlet/ControllerOutlet.js",
 	"controllers/lightbulb/ControllerLightbulb.js",
 	"controllers/colorbulb/ControllerColorbulb.js",
+	"controllers/basicsensor/ControllerBasicSensor.js",
 	"controllers/tempsensor/ControllerTemperatureSensor.js",
 	"controllers/garagedoor/ControllerGarageDoor.js",
 	"css/HomeControl.css",
