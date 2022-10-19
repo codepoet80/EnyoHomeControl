@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 100000;
+updateRate = 10000;
 isUpdating = false;
 cancelUpdate = false;
 updateInt = null;
