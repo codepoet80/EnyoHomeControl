@@ -138,7 +138,7 @@ enyo.kind({
         if (inResponse && inResponse["com.palm.properties.nduid"])
             this.deviceId = inResponse["com.palm.properties.nduid"];
 
-        var newUrl = this.$.updateServiceCheck.url + this.appName;
+        var newUrl = this.$.updateServiceCheck.url + this.appName + "/" + enyo.fetchAppInfo().version;
         newUrl = newUrl + "&clientid=" + this.deviceId;
         newUrl = newUrl + "&device=" + encodeURIComponent(deviceData);
         
