@@ -189,12 +189,11 @@ enyo.kind({
 	homeDataError: function(inSender, errorMessage, errorData, isFatal) {
 		if (isFatal) {
 			//stop periodic update if errors are fatal
-			enyo.warn("Fatal error occured, stopping periodic update!");
+			enyo.error("Fatal error occured, stopping periodic update!");
 			window.clearInterval(updateInt);
 		}
 		this.showError("Error", errorMessage);
-		enyo.log(inSender);
-		enyo.log(errorData);
+		enyo.error(JSON.stringify(errorData));
 	},
 	renderRoomRow: function(inSender, inIndex) {
 		if (this.layoutData && this.layoutData.length > 0) {

@@ -229,10 +229,11 @@ enyo.kind({
             this.doError("Login forbidden (error code 403). Check your username and password!", inResponse, true);
         else {
             if (browserSupportsCors()) {
-                this.doError("Login failed. Check the URL of the server, and ensure that you are not being blocked by CORS!", inResponse, true);
+                this.doError(("Login failed. Check the URL of the server, and ensure that you are not being blocked by CORS! " + (inResponse.statusCode || -1)), inResponse, true);
             }
             else {
-                this.doError("Login failed. Check the URL of the server.", inResponse, true);                
+                this.doError(("Login failed. Check the URL of the server. " + (inResponse.statusCode || -1)), inResponse, true);
+
             }
         }   
 	},
