@@ -21,7 +21,7 @@ enyo.kind({
 	currentAccessory: null,
 	components: [
 		{kind: "ApplicationEvents", onLoad: "createOrMakeConnection" },
-		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onError: "homeDataError" },
+		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onLoginError: "homeLoginError", onError: "homeDataError" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
 		//UI Elements
 		{kind: "PageHeader", className: "enyo-header-dark", components: [
@@ -150,6 +150,13 @@ enyo.kind({
 		} else {
 			this.doSignInOut();
 		}
+	},
+	homeLoginError: function(inSender, errorMessage, errorData, isFatal) {
+		enyo.error("Fatal error occured, stopping periodic update!");
+		window.clearInterval(updateInt);
+		this.showError("Error", errorMessage);
+		enyo.error(JSON.stringify(errorData));
+		this.doSignOut();
 	},
 	loadHomeData: function() {
 		//Update UI
@@ -341,12 +348,15 @@ enyo.kind({
 			this.$.loginPassword.setValue("");
 		}
 		else {
-			this.$.btnSignInOut.setCaption("Sign In");
-			Prefs.setCookie("password", "");
-			this.resetPanels();
-			window.clearInterval(updateInt);
-			isUpdating = false;
+			this.doSignOut();
 		}
+	},
+	doSignOut: function() {
+		this.$.btnSignInOut.setCaption("Sign In");
+		Prefs.setCookie("password", "");
+		this.resetPanels();
+		window.clearInterval(updateInt);
+		isUpdating = false;
 	},
 	showError: function(title, message) {
 		this.$.modalError.openAtCenter();

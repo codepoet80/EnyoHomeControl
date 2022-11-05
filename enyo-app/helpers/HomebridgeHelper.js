@@ -22,7 +22,8 @@ enyo.kind({
         onConnectHomeReady: "",
         onUpdateAccessoriesReady: "",
         onSetAccessoryReady: "",
-        onError: "" //TODO: Use this
+        onError: "",
+        onLoginError: "",
     },
     create: function() {
         this.inherited(arguments);
@@ -226,13 +227,13 @@ enyo.kind({
         enyo.error("Homebridge Helper hit an error during login");
         enyo.log(inResponse);
         if (inResponse.statusCode == 403)
-            this.doError("Login forbidden (error code 403). Check your username and password!", inResponse, true);
+            this.doLoginError("Login forbidden (error code 403). Check your username and password!", inResponse, true);
         else {
             if (browserSupportsCors()) {
-                this.doError(("Login failed. Check the URL of the server, and ensure that you are not being blocked by CORS! " + (inResponse.statusCode || -1)), inResponse, true);
+                this.doLoginError(("Login failed. Check the URL of the server, and ensure that you are not being blocked by CORS! " + (inResponse.statusCode || -1)), inResponse, true);
             }
             else {
-                this.doError(("Login failed. Check the URL of the server. " + (inResponse.statusCode || -1)), inResponse, true);
+                this.doLoginError(("Login failed. Check the URL of the server. " + (inResponse.statusCode || -1)), inResponse, true);
 
             }
         }   
