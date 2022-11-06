@@ -1,6 +1,6 @@
 {
 	"id": "com.jonandnic.enyo.homecontrol",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"vendor": "Jon W",
 	"type": "web",
 	"main": "index.html",
