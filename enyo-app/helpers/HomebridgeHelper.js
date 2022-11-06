@@ -8,7 +8,7 @@ Homebridge Helper
 */
 name = "homebridgehelper",
 defaultHomebridgeServer = "homebridge.local";
-defaultHomebridgeApiUrl = defaultHomebridgeServer + "/api/";
+defaultHomebridgeApiUrl = defaultHomebridgeServer + "/api";
 enyo.kind({
     name: "Helpers.Homebridge",
     kind: "Control",
@@ -33,7 +33,7 @@ enyo.kind({
     ConnectHome: function(sender, server, user, pass) {
         enyo.warn("Connect called with server: " + server);
         if (server)
-            this.currentHomebridgeApiUrl = server + "/api/";
+            this.currentHomebridgeApiUrl = server + "/api";
         if (server.indexOf("/") == -1)
             this.currentHomebridgeApiUrl = this.currentHomebridgeApiUrl + "/";
         if (this.currentHomebridgeApiUrl.indexOf("http://") == -1 && this.currentHomebridgeApiUrl.indexOf("https://") == -1)
