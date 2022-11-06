@@ -1,5 +1,5 @@
 ﻿name = "homecontrol";
-updateRate = 10000;
+updateRate = 100000;
 isUpdating = false;
 cancelUpdate = false;
 updateInt = null;
@@ -115,6 +115,14 @@ enyo.kind({
 				{ kind: "Button", flex: 1, caption: "OK", onclick: "errorDialogClose" },
 			]}
 		 ]},
+		 { kind: "AppMenu", name:"appMenu", components: [
+			{caption: "Get Debug Data", onclick: "saveDebugData"},
+		 ]},
+		 { kind : "PalmService", name: "fileSave", service : "palm://ca.canucksoftware.filemgr", method : "write",
+            onSuccess : "saveSuccess",
+            onFailure : "saveFailure",
+            subscribe : true
+         },
 	],
 	create: function() {
 		this.inherited(arguments);
@@ -137,6 +145,7 @@ enyo.kind({
 		}
 		this.$.spinnerRoom.applyStyle("display", "none");
 		this.$.spinnerAccessories.applyStyle("display", "none");
+		document.addEventListener("menubutton", this.openAppMenuHandler.bind(this), false);
 	},
 	createOrMakeConnection: function() {
 		this.server = Prefs.getCookie("server", "192.168.1.250");
@@ -179,9 +188,22 @@ enyo.kind({
 		if (this.online && ! isUpdating) {
 			isUpdating = true;
 			this.$.spinnerAccessories.applyStyle("display", "inline");
-			this.homeHelper.UpdateAccessories(this)
+			this.homeHelper.UpdateAccessories(this);
 		}
 		updateInt = window.setInterval(this.periodicUpdate.bind(this), updateRate);
+	},
+	saveDebugData: function() {
+		var now = new Date();
+		var fileName = "/media/internal/homecontrol-data-" + now.getTime() + ".json";
+		enyo.log("Saving last layout payload to " + fileName);
+		enyo.windows.addBannerMessage("Saving debug data to /media/internal", "{}");
+		this.$.fileSave.call({file: fileName, text: JSON.stringify(this.homeHelper.homeData)});
+	},
+	saveSuccess: function(sender, data) {
+		enyo.log("save success: " + JSON.stringify(data));
+	},
+	saveFailure: function(sender, data) {
+		enyo.log("save failure:" + JSON.stringify(data));
 	},
 	homeDataReady: function() {
 		this.online = true;
@@ -397,6 +419,15 @@ enyo.kind({
 	btnCancelLogin: function() {
 		this.$.modalLogin.close();
 	},
+	openAppMenuHandler: function() {
+		enyo.error("open menu called!");
+		this.$.appMenu.open();
+	},
+	closeAppMenuHandler: function()
+	 {
+		enyo.error("close menu called!");
+		this.$.appMenu.close();
+	}
 });
 String.prototype.toTitleCase = function() {
 	return this.replace(
