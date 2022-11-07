@@ -23,6 +23,7 @@ enyo.kind({
 		{kind: "ApplicationEvents", onLoad: "createOrMakeConnection" },
 		{kind: "Helpers.Homebridge", name: "myHomebridge", onConnectHomeReady: "homeDataReady", onUpdateAccessoriesReady: "accessoryDataUpdated", onSetAccessoryReady: "", onLoginError: "homeLoginError", onError: "homeDataError" },
 		{kind: "Helpers.Updater", name: "myUpdater" },
+		{kind: "PalmService", name: "fileSave", service: "palm://ca.canucksoftware.filemgr", method: "write", onSuccess: "saveSuccess", onFailure: "saveFailure", subscribe: true },
 		//UI Elements
 		{kind: "PageHeader", className: "enyo-header-dark", components: [
 			{kind: "VFlexBox", flex: 1, align: "center", components: [
@@ -118,11 +119,6 @@ enyo.kind({
 		 { kind: "AppMenu", name:"appMenu", components: [
 			{caption: "Get Debug Data", onclick: "saveDebugData"},
 		 ]},
-		 { kind : "PalmService", name: "fileSave", service : "palm://ca.canucksoftware.filemgr", method : "write",
-            onSuccess : "saveSuccess",
-            onFailure : "saveFailure",
-            subscribe : true
-         },
 	],
 	create: function() {
 		this.inherited(arguments);
