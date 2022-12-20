@@ -1,11 +1,10 @@
 enyo.kind({
-	name: "Controller.Outlet",
+	name: "Controller.Fan",
 	kind: "Control",
 	layoutKind: "VFlexLayout", 
 	/* Public Interface */
 	SupportedAccessories: [
-		"outlet",
-		"television"
+		"fan"
 	],
 	published: {
 		accessory: null,
@@ -30,10 +29,10 @@ enyo.kind({
 		switch(this.state) {
 			case true:
 				newCaption = "On"
-				this.$.imageDetail.setSrc("controllers/outlet/outlet-on.png");
+				this.$.imageDetail.setSrc("controllers/fan/fan-on.png");
 				break;
 			default:
-				this.$.imageDetail.setSrc("controllers/outlet/outlet-off.png");
+				this.$.imageDetail.setSrc("controllers/fan/fan-off.png");
 				break;
 		}
 		if (this.accessory.caption)
@@ -47,6 +46,7 @@ enyo.kind({
 			this.state = this.accessory.state;
 			this.stateChanged();
 			this.amount = this.accessory.amount;
+			this.$.sliderDimmer.setProperty("position", this.amount);
 			this.condition = this.accessory.condition;
 		}
 	},
@@ -54,13 +54,14 @@ enyo.kind({
 	components: [
 		{kind:"Scroller", flex: 1, components: [
 			{w: "fill", domStyles: {"text-align": "center"}, components: [
-				{kind: "Image", flex:1, name: "imageDetail", src: "controllers/outlet/outlet-off.png", onclick: "outletControlClick", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
+				{kind: "Image", flex:1, name: "imageDetail", src: "controllers/fan/fan-off.png", onclick: "fanControlClick", domStyles: {width: "400px", "margin-left": "auto", "margin-right": "auto"}},
 			]},
-			{w: "fill", name: "captionDetail", content: "Outlet Controller", domStyles: {"text-align": "center", "margin-left": "100px", "margin-right": "100px"}},
+			{w: "fill", name: "captionDetail", content: "Fan Controller", domStyles: {"text-align": "center", "margin-left": "100px", "margin-right": "100px"}},
+			{kind: "Slider", name: "sliderDimmer", onChange: "dimmerChanged", domStyles: {width: "70%", "margin-left": "auto", "margin-right": "auto"}}
 		]},
 
 	],
-	outletControlClick: function(inSender, inEvent){
+	fanControlClick: function(inSender, inEvent){
 		inEvent.stopImmediatePropagation();
 
 		enyo.log(this.name + " saw " + this.SupportedAccessories[0] + " clicked for ID: " + JSON.stringify(this.accessory.uniqueId));

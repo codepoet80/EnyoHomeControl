@@ -7,6 +7,7 @@
 	"controllers/basicsensor/ControllerBasicSensor.js",
 	"controllers/tempsensor/ControllerTemperatureSensor.js",
 	"controllers/garagedoor/ControllerGarageDoor.js",
+	"controllers/fan/ControllerFan.js",
 	"css/HomeControl.css",
 	"helpers/HomebridgeHelper.js",
 	"helpers/Prefs.js",

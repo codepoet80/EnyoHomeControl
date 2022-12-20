@@ -87,7 +87,8 @@ enyo.kind({
 					{kind: "Controller.Colorbulb", name: "controllerColorbulb", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.BasicSensor", name: "controllerBasicSensor", onAccessoryChanged:"accessoryChanged"},
 					{kind: "Controller.TemperatureSensor", name: "controllerTemperatureSensor", onAccessoryChanged:"accessoryChanged"},
-					{kind: "Controller.GarageDoor", name: "controllerGarageDoor", onAccessoryChanged:"accessoryChanged"}
+					{kind: "Controller.GarageDoor", name: "controllerGarageDoor", onAccessoryChanged:"accessoryChanged"},
+					{kind: "Controller.Fan", name: "controllerFan", onAccessoryChanged:"accessoryChanged"}
 				]},
 				{kind: "Toolbar", components: [
 					{kind: "GrabButton"}

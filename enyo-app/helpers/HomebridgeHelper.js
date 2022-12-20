@@ -110,6 +110,18 @@ enyo.kind({
                         break;
                 }
                 break;
+            case "television": 
+                switch (setting) {
+                    default:
+                        var putData = {
+                            "characteristicType": "Active",
+                            "value": "0"
+                        }
+                        if (value)
+                            putData.value = "1";
+                        break;
+                }
+                break;
             case "lightbulb": 
                 switch (setting) {
                     case "amount":
@@ -165,6 +177,24 @@ enyo.kind({
                         break;
                 }
                 enyo.log("garage door put data is: " + JSON.stringify(putData));
+                break;
+            case "fan": 
+                switch (setting) {
+                    case "amount":
+                        var putData = {
+                            "characteristicType": "Speed",
+                            "value": value
+                        }
+                        break;
+                    default:
+                        var putData = {
+                            "characteristicType": "On",
+                            "value": "0"
+                        }
+                        if (value)
+                            putData.value = "1";
+                        break;
+                }
                 break;
         }
         if (putData) {
@@ -310,6 +340,11 @@ enyo.kind({
                         accessory.condition = null;
                         accessory.class = "outlet";
                         break;
+                    case "television":
+                        accessory.state = Boolean(data.values.On);
+                        accessory.condition = null;
+                        accessory.class = "outlet";
+                        break;
                     case "garagedooropener":
                         accessory.type = "garagedoor";
                         accessory.state = !Boolean(data.values.CurrentDoorState);
@@ -323,6 +358,11 @@ enyo.kind({
                     case "temperaturesensor":
                         accessory.type = "temperaturesensor";
                         accessory.amount = data.serviceCharacteristics[0].value;
+                        break;
+                    case "fan":
+                        accessory.state = Boolean(data.values.On);
+                        accessory.condition = null;
+                        accessory.class = "fan";
                         break;
                     default:
                         if (data.type.toLowerCase().indexOf("sensor") != -1) {

@@ -23,13 +23,20 @@
     background-image: url("../images/outlet-icon-true.png") !important;
     background-size: 32px 32px;
 }
-
 .door {
     background-image: url("../images/door-icon.png");
     background-size: 32px 32px;
 }
 .door.true {
     background-image: url("../images/door-icon-true.png") !important;
+    background-size: 32px 32px;
+}
+.fan {
+    background-image: url("../images/fan-icon.png");
+    background-size: 32px 32px;
+}
+.fan.true {
+    background-image: url("../images/fan-icon-true.png") !important;
     background-size: 32px 32px;
 }
 .highlightedRow {
