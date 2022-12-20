@@ -182,7 +182,7 @@ enyo.kind({
                 switch (setting) {
                     case "amount":
                         var putData = {
-                            "characteristicType": "Speed",
+                            "characteristicType": "RotationSpeed",
                             "value": value
                         }
                         break;
