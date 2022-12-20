@@ -42,7 +42,7 @@ enyo.kind({
 	accessoryChanged: function(oldAccessory) {
 		if (this.accessory && this.accessory.caption) {
 			enyo.log(this.name + " has been informed of a new accessory " + this.accessory.caption);
-			//enyo.log(JSON.stringify(this.accessory));
+			enyo.log(JSON.stringify(this.accessory));
 			this.state = this.accessory.state;
 			this.stateChanged();
 			this.amount = this.accessory.amount;

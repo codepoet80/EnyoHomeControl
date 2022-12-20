@@ -361,7 +361,7 @@ enyo.kind({
                         break;
                     case "fan":
                         accessory.state = Boolean(data.values.On);
-                        accessory.condition = null;
+                        accessory.amount = data.values.RotationSpeed;
                         accessory.class = "fan";
                         break;
                     default:
