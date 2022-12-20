@@ -341,8 +341,8 @@ enyo.kind({
                         accessory.class = "outlet";
                         break;
                     case "television":
-                        accessory.state = Boolean(data.values.On);
-                        accessory.condition = null;
+                        accessory.state = Boolean(data.values.Active);
+                        accessory.amount = data.values.ActiveIdentifier;
                         accessory.class = "outlet";
                         break;
                     case "garagedooropener":
