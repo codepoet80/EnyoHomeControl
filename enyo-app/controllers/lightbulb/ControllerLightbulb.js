@@ -62,14 +62,14 @@ enyo.kind({
 
 	],
 	lightControlClick: function(inSender, inEvent){
-		inEvent.stopImmediatePropagation();
-
-		enyo.log(this.name + " saw " + this.SupportedAccessories[0] + " clicked for ID: " + JSON.stringify(this.accessory.uniqueId));
-		var newState = !this.state;
-		this.state = newState;
-		this.helper.SetAccessoryValue(this, this.accessory.uniqueId, this.accessory.type, "state", newState);
-		this.stateChanged();
-		this.doAccessoryChanged(inEvent);
+		if (checkClickFilter(inEvent)) {	//on index.html, for backward android compatibility
+			enyo.log(this.name + " saw " + this.SupportedAccessories[0] + " clicked for ID: " + JSON.stringify(this.accessory.uniqueId));
+			var newState = !this.state;
+			this.state = newState;
+			this.helper.SetAccessoryValue(this, this.accessory.uniqueId, this.accessory.type, "state", newState);
+			this.stateChanged();
+			this.doAccessoryChanged(inEvent);
+		}
 	},
 	dimmerChanged: function(inSender, inEvent) {
 		this.amount = this.$.sliderDimmer.position;

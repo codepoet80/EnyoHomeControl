@@ -256,15 +256,16 @@ enyo.kind({
 		}
 	},
 	roomClick: function(inSender, inEvent) {
-		enyo.warn("Room clicked on row: " + inEvent.rowIndex);
-		this.selectNextView();
-		if (this.selectedRoom != inEvent.rowIndex) {
-			this.roomChanged = true;
-			this.selectedRoom = inEvent.rowIndex;
-			this.selectedAccessory = null;
-			this.$.roomList.refresh();	//OR: this.$.roomList.select(inEvent.rowIndex);
+		if (checkClickFilter(inEvent)) {	//on index.html, for backward android compatibility
+			//enyo.info("Room clicked on row: " + inEvent.rowIndex);
+			this.selectNextView();
+			if (this.selectedRoom != inEvent.rowIndex) {
+				this.roomChanged = true;
+				this.selectedRoom = inEvent.rowIndex;
+				this.selectedAccessory = null;
+				this.$.roomList.refresh();	//OR: this.$.roomList.select(inEvent.rowIndex);
+			}
 		}
-		inEvent.stopImmediatePropagation();
 	},
 	accessoryDataUpdated: function() {
 		enyo.log("Accessories updated on: " + this.name);
@@ -294,11 +295,12 @@ enyo.kind({
 		}
 	},
 	accessoryClick: function(inSender, inEvent) {
-		enyo.log("Accessory click on row: " + inEvent.rowIndex);
-		this.selectNextView();
-		this.selectedAccessory = inEvent.rowIndex;
-		this.$.accessoryList.refresh();	//OR: this.$.accessoryList.select(inEvent.rowIndex);
-		inEvent.stopImmediatePropagation();
+		if (checkClickFilter(inEvent)) {	//on index.html, for backward android compatibility
+			//enyo.log("Accessory click on row: " + inEvent.rowIndex);
+			this.selectNextView();
+			this.selectedAccessory = inEvent.rowIndex;
+			this.$.accessoryList.refresh();	//OR: this.$.accessoryList.select(inEvent.rowIndex);
+		}
 	},
 	showAccessoryController: function(accessory) {
 		//enyo.warn("Showing accessory controller for: " + JSON.stringify(accessory));
