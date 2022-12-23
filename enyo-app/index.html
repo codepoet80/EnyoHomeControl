@@ -66,17 +66,17 @@
 		document.addEventListener("touchstart", onTouchStart, { passive: false });
 		document.addEventListener("touchmove", onTouchMove, { passive: false });
 
-		//Stop Android double-firing click events
+		//Stop double-firing click events (Android and iOS)
 		var lastClick = 0;
 		function checkClickFilter(e) {
-			if (navigator.userAgent.toLowerCase().indexOf("android") != -1) {
+			//if (navigator.userAgent.toLowerCase().indexOf("android") != -1) {
 				var timeStamp = Date.now()
 				var elapsed = timeStamp - lastClick;
 				lastClick = timeStamp;
 				if ((elapsed && elapsed > 50 && elapsed < 300)) {
 					return false;
 				} 
-			}
+			//}
 			return true;
 		}
 	</script>
