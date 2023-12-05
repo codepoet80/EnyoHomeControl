@@ -1,5 +1,5 @@
 .box-center {
-	width:500px;
+	padding: 5px;
 	margin:23px auto 0;
 }
 .box-center .enyo-spinner{
@@ -114,7 +114,7 @@ div:last-child > .accounts-list-item {
 	margin: -10px;
 }
 .error-box {
-	width:500px;
+	padding: 5px;
 }
 .error-box img {
 	margin:0 7px;

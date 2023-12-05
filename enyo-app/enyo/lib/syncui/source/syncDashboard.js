@@ -216,12 +216,12 @@ enyo.kind({
 			this.permissionDashboard[syncSource.capabilityProvider] = this.createComponent({
 				kind: "Dashboard",
 				name: "SyncUI-" + syncSource.capabilityProvider,
-				smallIcon: "/usr/lib/luna/system/luna-systemui/images/notification-small-info.png",
+				smallIcon: "/usr/palm/applications/com.palm.systemui/images/notification-small-info.png",
 			});
 		}
 		// Display the dashboard message			
 		this.permissionDashboard[syncSource.capabilityProvider].setLayers([{
-			icon: "/usr/lib/luna/system/luna-systemui/images/notification-large-info.png",
+			icon: "/usr/palm/applications/com.palm.systemui/images/notification-large-info.png",
 			title: syncSource.title || syncSource.capabilityProvider,
 			text: syncSource.text,
 		}]);

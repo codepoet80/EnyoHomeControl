@@ -7,7 +7,7 @@ regexp: true, newcap: true, immed: true, nomen: false, maxerr: 500 */
  * Note this supports both the older deprecated interface (palmService()) and the
  * new interface (PalmServiceBridge object).
  *
- * Copyright 2009 Palm, Inc.  All rights reserved.
+ * 
  */
 
 /*globals PalmServiceBridge _ */

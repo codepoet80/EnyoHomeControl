@@ -14,6 +14,7 @@
 .enyo-contacts-list .contacts-search.enyo-input.enyo-rounded-input {
 	margin:0 0 -3px; /* blend shadow from bg_search.png */
 	-webkit-border-image:url(../images/bg_search.png) 0 15 repeat;
+	border-style: solid;
 	border-width:0 15px;	
 	height:44px;
 }
@@ -166,6 +167,7 @@
 }
 .enyo-contacts-details .enyo-group {
 	-webkit-border-image:none;
+	border-style: solid;
 	border:0;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 	border-top:1px solid (255,255,255,0.2);
@@ -226,6 +228,7 @@
 .edit-contact.enyo-button {
 	background:none;
 	-webkit-border-image:none;
+	border-style: solid;
 }
 /* TODO: temporary styling to be replaced...all GAL styling TDB*/
 .contacts-GAL-message {
@@ -252,6 +255,7 @@
 .contactsui-peoplepicker {
   width: 320px;
   border-width: 24px;
+  border-style: solid;
   -webkit-border-image: url(../images/dialogbg.png) 24 stretch stretch;
 }
 

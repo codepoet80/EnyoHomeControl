@@ -1,3 +1,7 @@
+/* Enyo v1.0 | Copyright 2011-2012 Hewlett-Packard Development Company, L.P. | enyojs.com | enyojs.com/license */
+/* Updated for upgrade to QT 5.8 with Chromium 53 based rendering engine */
+/* We need to explicitly define 'border-style: solid' since Chromium 51 in order for the border-image to keep working correctly and to be compliant with standard */
+/* See https://www.w3.org/TR/2005/WD-css3-background-20050216/#the-border-image and https://groups.google.com/a/chromium.org/forum/#!searchin/blink-dev/border-image/blink-dev/J7rvFkcn8TU/OtIcXTDDAQAJ */
 /* dom/dom.css */
 
 /*
@@ -266,7 +270,6 @@ div, object, img, textarea, iframe {
 	/*background: -webkit-gradient(linear, left top, left bottom, from(#00ABEB), to(white), color-stop(0.5, white), color-stop(0.5, #6C0));*/
 	-webkit-background-origin: padding-box;
 	-webkit-background-clip: content-box;
-
 }
 
 
@@ -360,7 +363,7 @@ html, body, input, button {
 /* Preferences Styles */
 
 .enyo-preferences-box {
-	width: 500px;
+	padding: 5px;
 	margin: 23px auto 0;
 }
 
@@ -409,6 +412,7 @@ html, body, input, button {
 	min-width: 14px;
 	min-height: 20px;
 	-webkit-border-image: url(palm/themes/Onyx/images/button-up.png) 4 4 4 4 stretch stretch;
+	border-style: solid;
 	border-width: 4px;
 	border-radius: 5px;
 	margin: 3px;
@@ -418,15 +422,18 @@ html, body, input, button {
 
 .enyo-button.enyo-button-down, .enyo-button.enyo-button-depressed {
 	-webkit-border-image: url(palm/themes/Onyx/images/button-down.png) 4 4 4 4 stretch stretch;
+	border-style: solid;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-button {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/button-up.png) 6 6 6 6 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-button.enyo-button-down, .enyo-button.enyo-button-depressed {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/button-down.png) 6 6 6 6 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -569,38 +576,46 @@ html, body, input, button {
 @media (-webkit-max-device-pixel-ratio:1.49) { /* 1x */
 	.enyo-radiobutton.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 0 16 556 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-first.enyo-button-depressed,
 	.enyo-radiobutton.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 37 16 519 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 74 16 482 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-middle.enyo-button-depressed,
 	.enyo-radiobutton.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 111 16 445 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 148 16 408 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-last.enyo-button-depressed,
 	.enyo-radiobutton.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 185 16 371 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 222 16 334 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-single.enyo-button-depressed,
 	.enyo-radiobutton.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 259 16 297 16;
+		border-style: solid;
 	}
 
 
@@ -608,38 +623,46 @@ html, body, input, button {
 
 	.enyo-radiobutton-dark.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 296 16 260 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-first.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 333 16 223 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 370 16 186 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-middle.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 407 16 149 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 444 16 112 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-last.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 481 16 75 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 518 16 38 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-single.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 555 16 1 16;
+		border-style: solid;
 	}
 
 
@@ -647,6 +670,7 @@ html, body, input, button {
 
 	.enyo-tabbutton.enyo-first, .enyo-tabbutton.enyo-middle, .enyo-tabbutton.enyo-last, .enyo-tabbutton.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 74 16 482 16;
+		border-style: solid;
 	}
 
 	.enyo-tabbutton.enyo-first.enyo-button-depressed,
@@ -658,6 +682,7 @@ html, body, input, button {
 	.enyo-tabbutton.enyo-single.enyo-button-depressed,
 	.enyo-tabbutton.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 111 16 445 16;
+		border-style: solid;
 	}
 
 }
@@ -673,38 +698,46 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-radiobutton.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 0 16 834 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-first.enyo-button-depressed,
 	.enyo-radiobutton.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 55 16 779 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 110 16 724 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-middle.enyo-button-depressed,
 	.enyo-radiobutton.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 165 16 669 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 220 16 614 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-last.enyo-button-depressed,
 	.enyo-radiobutton.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 275 16 559 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 330 16 504 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton.enyo-single.enyo-button-depressed,
 	.enyo-radiobutton.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 385 16 449 16;
+		border-style: solid;
 	}
 
 
@@ -712,38 +745,46 @@ html, body, input, button {
 
 	.enyo-radiobutton-dark.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 440 16 394 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-first.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 495 16 339 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 550 16 284 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-middle.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 605 16 229 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 660 16 174 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-last.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 715 16 119 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 770 16 64 16;
+		border-style: solid;
 	}
 
 	.enyo-radiobutton-dark.enyo-single.enyo-button-depressed,
 	.enyo-radiobutton-dark.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 825 16 9 16;
+		border-style: solid;
 	}
 
 
@@ -751,6 +792,7 @@ html, body, input, button {
 
 	.enyo-tabbutton.enyo-first, .enyo-tabbutton.enyo-middle, .enyo-tabbutton.enyo-last, .enyo-tabbutton.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 110 16 724 16;
+		border-style: solid;
 	}
 
 	.enyo-tabbutton.enyo-first.enyo-button-depressed,
@@ -762,6 +804,7 @@ html, body, input, button {
 	.enyo-tabbutton.enyo-single.enyo-button-depressed,
 	.enyo-tabbutton.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 165 16 669 16;
+		border-style: solid;
 	}
 }
 
@@ -800,62 +843,75 @@ html, body, input, button {
 
 	.enyo-grouped-toolbutton.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 0 16 556 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-first.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 37 16 519 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 74 16 482 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-middle.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 111 16 445 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 148 16 408 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-last.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 185 16 371 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 222 16 334 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-single.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 259 16 297 16;
+		border-style: solid;
 	}
 
 	/* dark */
 
 	.enyo-grouped-toolbutton-dark.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 296 16 260 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-first.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 333 16 223 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 370 16 186 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-middle.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 407 16 149 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 444 16 112 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-last.enyo-button-depressed,
@@ -865,11 +921,13 @@ html, body, input, button {
 
 	.enyo-grouped-toolbutton-dark.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 518 16 38 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-single.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images/radiobutton.png) 555 16 1 16;
+		border-style: solid;
 	}
 }
 
@@ -877,76 +935,92 @@ html, body, input, button {
 
 	.enyo-grouped-toolbutton.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 0 16 834 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-first.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 55 16 779 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 110 16 724 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-middle.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 165 16 669 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 220 16 614 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-last.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 275 16 559 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 330 16 504 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton.enyo-single.enyo-button-depressed,
 	.enyo-grouped-toolbutton.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 385 16 449 16;
+		border-style: solid;
 	}
 
 	/* dark */
 
 	.enyo-grouped-toolbutton-dark.enyo-first {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 440 16 394 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-first.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-first.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 495 16 339 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-middle {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 550 16 284 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-middle.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-middle.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 605 16 229 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-last {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 660 16 174 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-last.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-last.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 715 16 119 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-single {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 770 16 64 16;
+		border-style: solid;
 	}
 
 	.enyo-grouped-toolbutton-dark.enyo-single.enyo-button-depressed,
 	.enyo-grouped-toolbutton-dark.enyo-single.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/radiobutton.png) 825 16 9 16;
+		border-style: solid;
 	}
 }
 
@@ -1013,11 +1087,13 @@ html, body, input, button {
 	padding: 4px 8px;
 	border-style: none;
 	-webkit-border-image: url(palm/themes/Onyx/images/button-toolbar.png) 4 4 4 4 stretch stretch;
+	border-style: solid;
 }
 
 
 .enyo-tool-button-client.enyo-tool-button-captioned.enyo-button-down, .enyo-tool-button-client.enyo-button-depressed {
 	-webkit-border-image: url(palm/themes/Onyx/images/button-down.png) 4 4 4 4 stretch stretch;
+	border-style: solid;
 }
 
 .enyo-tool-button-client.enyo-button-depressed {
@@ -1033,10 +1109,12 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-tool-button-client.enyo-tool-button-captioned.enyo-button-down, .enyo-tool-button-client.enyo-button-depressed {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/button-down.png) 6 6 6 6 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-tool-button-client.enyo-tool-button-captioned {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/button-toolbar.png) 6 6 6 6 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -1079,11 +1157,13 @@ html, body, input, button {
 	-webkit-box-sizing: border-box;
 	border-width: 24px;
 	-webkit-border-image: url(palm/themes/Onyx/images/popup.png) 24 24 24 24 stretch stretch;
+	border-style: solid;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-popup {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/popup.png) 36 36 36 36 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -1101,6 +1181,7 @@ html, body, input, button {
 	min-width: inherit;
 	border-width: 20px;
 	-webkit-border-image: url(palm/themes/Onyx/images/menu-background.png) 20 20 20 20 stretch stretch;
+	border-style: solid;
 	
 	/* FIXME: consider when works more reliably */
 	/*
@@ -1159,6 +1240,7 @@ html, body, input, button {
 	}
 	.enyo-popup.enyo-popup-menu {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/menu-background.png) 30 30 30 30 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -1290,6 +1372,7 @@ html, body, input, button {
 	font-size: 18px;
 	border-width: 12px 24px 20px 24px;
 	-webkit-border-image: url(palm/themes/Onyx/images/appmenu.png) 12 24 20 24 stretch stretch;
+	border-style: solid;
 	color: white;
 	top: 0px;
 	left: -10px;
@@ -1318,6 +1401,7 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-popup.enyo-appmenu {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/appmenu.png) 18 36 30 36 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -1325,6 +1409,7 @@ html, body, input, button {
 
 .enyo-appmenu-item.enyo-item {
 	-webkit-border-image: url(palm/themes/Onyx/images/appmenu-divider.png) 0 0 2 0 stretch;
+	border-style: solid;
 	color: white;
 	border-bottom: 2px;
 	padding: 10px 7px 10px 5px;
@@ -1344,6 +1429,7 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-appmenu-item.enyo-item { 
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/appmenu-divider.png) 0 0 3 0 stretch;
+		border-style: solid;
 	}
 	
 	.enyo-appmenu-item.enyo-held {
@@ -1469,6 +1555,7 @@ html, body, input, button {
 .enyo-progress-bar {
 	height: 12px;
 	border-width: 0 4px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/progress-bar.png) 0 4 0 4 repeat repeat;
 	-webkit-box-sizing: border-box;
 	position:relative;
@@ -1478,6 +1565,7 @@ html, body, input, button {
 	margin: 0 -5px;
 	height: 12px;
 	border-width: 0 4px;
+	border-style: solid;
 	position: absolute;
 	z-index:10; /* for progressSlider altBarPosition */
 	-webkit-border-image: url(palm/themes/Onyx/images/progress-bar-inner.png) 0 4 0 4 repeat repeat;
@@ -1487,9 +1575,11 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-progress-bar {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/progress-bar.png) 0 6 0 6 stretch stretch;
+		border-style: solid;
 	}
 	.enyo-progress-bar-inner {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/progress-bar-inner.png) 0 6 0 6 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -1501,6 +1591,7 @@ html, body, input, button {
 .enyo-progress-bar-item {
 	min-height: 24px;
 	border-width: 12px 0px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/progress-item.png) 12 0 12 0 repeat repeat;
 	-webkit-box-sizing: border-box;
 	position:relative;
@@ -1511,6 +1602,7 @@ html, body, input, button {
 	padding: 12px 0px;
 	height:100%;
 	border-width: 0 8px 0 0;
+	border-style: solid;
 	position:absolute;
 	-webkit-border-image: url(palm/themes/Onyx/images/progress-item-inner.png) 0 8 0 0 repeat stretch;
 }
@@ -1523,9 +1615,11 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-progress-bar-item {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/progress-item.png) 18 0 18 0 stretch repeat;
+		border-style: solid;
 	}
 	.enyo-progress-bar-item-inner {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/progress-item-inner.png) 0 12 0 0 repeat stretch;
+		border-style: solid;
 	}	
 }
 
@@ -1536,6 +1630,7 @@ html, body, input, button {
 	min-height: 34px;
 	border-width: 4px;
 	border-radius: 5px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/button-down.png) 4 4 4 4 stretch stretch;
 	color: white;
 	background-color: rgba(23,23,23,0.5);
@@ -1551,6 +1646,7 @@ html, body, input, button {
 	bottom: 0;
 	border-width: 4px;
 	border-radius: 5px;
+	border-style: solid;
 	position: absolute;
 	-webkit-border-image: url(palm/themes/Onyx/images/button.png) 4 4 4 4 stretch stretch;
 }
@@ -1572,10 +1668,12 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-progress-button {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/button-down.png) 6 6 6 6 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-progress-button-inner {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/button.png) 6 6 6 6 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-progress-button-cancel {
@@ -1622,6 +1720,7 @@ html, body, input, button {
 .enyo-progress-slider {
 	height: 10px;
 	border-width: 0 4px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/slider-track.png) 0 4 0 4 repeat repeat;
 	-webkit-box-sizing: border-box;
 	position:relative;
@@ -1630,6 +1729,7 @@ html, body, input, button {
 .enyo-progress-slider-alt-bar, .enyo-progress-slider > .enyo-progress-bar-inner {
 	height: 10px;
 	border-width: 0 4px;
+	border-style: solid;
 	margin: 0 -4px;
 	position: absolute;
 	-webkit-border-image: url(palm/themes/Onyx/images/slider-progress.png) 0 4 0 4 repeat repeat;
@@ -1637,6 +1737,7 @@ html, body, input, button {
 
 .enyo-progress-slider-alt-bar {
 	z-index:5; /* under primary progress */
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/slider-progress-secondary.png) 0 4 0 4 repeat repeat;
 	-webkit-transition: width 0.3s ease;
 }
@@ -1645,14 +1746,17 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-progress-slider {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/slider-track.png) 0 6 0 6 repeat stretch;
+		border-style: solid;
 	}
 	
 	.enyo-progress-slider > .enyo-progress-bar-inner {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/slider-progress.png) 0 6 0 6 repeat stretch;
+		border-style: solid;
 	}
 	
 	.enyo-progress-slider-alt-bar {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/slider-progress-secondary.png) 0 6 0 6 repeat stretch;
+		border-style: solid;
 	}
 }
 
@@ -1685,6 +1789,7 @@ html, body, input, button {
 .enyo-slider-progress {
 	height: 10px;
 	border-width: 0px 4px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/slider-track.png) 0 4 0 4 repeat repeat;
 	margin: 20px 0px;
 	position:relative;
@@ -1702,6 +1807,7 @@ html, body, input, button {
 	
 	.enyo-slider-progress {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/slider-track.png) 0 6 0 6 repeat stretch;
+		border-style: solid;
 	}
 }
 
@@ -1712,6 +1818,7 @@ html, body, input, button {
 	-webkit-box-sizing: border-box;
 	min-height: 50px;
 	border-width: 2px 0;
+	border-style: solid;
 	background-color: #ccc;
 	color: #444;
 	/*
@@ -1725,6 +1832,7 @@ html, body, input, button {
 
 .enyo-header.enyo-header-dark {
 	-webkit-border-image: url(palm/themes/Onyx/images/toolbar.png) 2 4 repeat stretch;
+	border-style: solid;
 	border-width: 2px 0;
 	background-color: #343434;
 	color: #fff;
@@ -1733,10 +1841,12 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-header {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/header.png) 3 0;
+		border-style: solid;
 	}
 	
 	.enyo-header.enyo-header-dark {
 		-webkit-border-image: url(palm/themes/Onyx/images/toolbar.png) 3 6 repeat stretch;
+		border-style: solid;
 	}
 }
 
@@ -1757,12 +1867,14 @@ html, body, input, button {
 	min-height: 54px;
 	-webkit-box-sizing: border-box;
 	-webkit-border-image: url(palm/themes/Onyx/images/toolbar.png) 2 4 repeat stretch;
+	border-style: solid;
 	border-width: 2px 4px;
 	background-color: #343434;
 }
 
 .enyo-toolbar-light {
 	-webkit-border-image: url(palm/themes/Onyx/images/toolbar-light.png) 2 4 repeat stretch;
+	border-style: solid;
 	background-color: #a9a9a9;
 }
 
@@ -1778,10 +1890,12 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-toolbar {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toolbar.png) 3 6 repeat stretch;
+		border-style: solid;
 	}
 	
 	.enyo-toolbar-light {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toolbar-light.png) 3 6 repeat stretch;
+		border-style: solid;
 	}
 }
 
@@ -1794,6 +1908,7 @@ html, body, input, button {
 .enyo-confirmprompt-scrim {
 	-webkit-border-image: url(palm/themes/Onyx/images/confirmprompt-background.png) 20 0 repeat;
 	-webkit-box-sizing: border-box;
+	border-style: solid;
 	border-width: 20px 0px;
 	background-color: #fff;
 }
@@ -1805,6 +1920,7 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-confirmprompt-scrim {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/confirmprompt-background.png) 30 0 stretch;
+		border-style: solid;
 	}
 }
 
@@ -1838,39 +1954,47 @@ html, body, input, button {
 
 .enyo-toggle-button-bar.on {
 	border-width: 0px 30px 0px 8px;
-	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 1 30 97 8 repeat repeat;
+	border-style: solid;
+	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 1 30 97 8;
 }
 
 .enyo-toggle-button-bar.off {
 	border-width: 0px 8px 0px 30px;
-	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 33 8 65 30 repeat repeat;
+	border-style: solid;
+	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 33 8 65 30;
 }
 
 .enyo-toggle-button-bar.disabled.on {
 	border-width: 0px 30px 0px 8px;
-	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 65 30 33 8 repeat repeat;
+	border-style: solid;
+	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 65 30 33 8;
 }
 
 .enyo-toggle-button-bar.disabled.off {
 	border-width: 0px 8px 0px 30px;
-	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 97 8 1 30 repeat repeat;
+	border-style: solid;
+	-webkit-border-image: url(palm/themes/Onyx/images/toggle-button.png) 97 8 1 30;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-toggle-button-bar.on {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toggle-button.png) 2 45 145 12 stretch stretch;
+		border-style: solid;
 	}
 
 	.enyo-toggle-button-bar.off {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toggle-button.png) 50 12 97 45 stretch stretch;
+		border-style: solid;
 	}
 
 	.enyo-toggle-button-bar.disabled.on {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toggle-button.png) 98 45 49 12 stretch stretch;
+		border-style: solid;
 	}
 
 	.enyo-toggle-button-bar.disabled.off {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toggle-button.png) 146 12 1 45 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -1945,6 +2069,7 @@ html, body, input, button {
 
 .enyo-picker-button {
 	-webkit-border-image: url(palm/themes/Onyx/images/picker-pill.png) 10;
+	border-style: solid;
 	border-width: 10px;
 	font-size: 16px;
 	line-height: 32px;
@@ -1958,27 +2083,33 @@ html, body, input, button {
 
 .enyo-picker-button.enyo-button {
 	-webkit-border-image: url(palm/themes/Onyx/images/picker-pill.png) 10;
+	border-style: solid;
 }
 
 .enyo-picker-button.enyo-button-down {
 	-webkit-border-image: url(palm/themes/Onyx/images/picker-pill-downstate.png) 10;
+	border-style: solid;
 }
 
 .enyo-picker-button.enyo-button-focus {
 	-webkit-border-image: url(palm/themes/Onyx/images/picker-pill-focus.png) 10;
+	border-style: solid;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-picker-button {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/picker-pill.png) 15;
+		border-style: solid;
 	}
 
 	.enyo-picker-button.enyo-button-down {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/picker-pill-downstate.png) 15;
+		border-style: solid;
 	}
 
 	.enyo-picker-button.enyo-button-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/picker-pill-focus.png) 15;
+		border-style: solid;
 	}
 }
 
@@ -2008,6 +2139,7 @@ html, body, input, button {
 
 .enyo-pickergroup-pickerpopup {
 	border-width: 0;
+	border-style: solid;
 	-webkit-border-image: none;
 	min-width: 0px;
 }
@@ -2017,7 +2149,8 @@ html, body, input, button {
 
 .enyo-group {
 	border-width: 14px 14px 14px 14px;
-	-webkit-border-image: url(palm/themes/Onyx/images/group-unlabeled.png) 14 14 repeat repeat;
+	border-style: solid;
+	-webkit-border-image: url(palm/themes/Onyx/images/group-unlabeled.png) 14 14;
 	margin: 8px 3px;
 }
 
@@ -2031,16 +2164,19 @@ html, body, input, button {
 
 .enyo-group.labeled {
 	border-width: 36px 14px 14px 14px;
-	-webkit-border-image: url(palm/themes/Onyx/images/group-labeled.png) 36 14 14 14 repeat repeat;
+	border-style: solid;
+	-webkit-border-image: url(palm/themes/Onyx/images/group-labeled.png) 36 14 14 14;
 	margin: 8px 3px;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-group {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/group-unlabeled.png) 21 21 stretch stretch;
+		border-style: solid;
 	}
 	.enyo-group.labeled {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/group-labeled.png) 54 21 21 21 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -2063,6 +2199,7 @@ html, body, input, button {
 
 .enyo-input.enyo-rounded-input, .enyo-input.enyo-rounded-input.enyo-input-focus {
 	border-width: 6px 20px;
+	border-style: solid;
 	-webkit-box-sizing: border-box;
 	-webkit-border-image: url(palm/themes/Onyx/images/roundedbox.png) 6 20;
 	margin: 2px 0;
@@ -2077,6 +2214,7 @@ html, body, input, button {
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-input.enyo-rounded-input, .enyo-input.enyo-rounded-input.enyo-input-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/roundedbox.png) 9 30;
+		border-style: solid;
 	}
 }
 
@@ -2093,11 +2231,13 @@ html, body, input, button {
 
 .enyo-input.enyo-input-focus {
 	-webkit-border-image: url(palm/themes/Onyx/images/input-focus.png) 14 14;
+	border-style: solid;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-input.enyo-input-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/input-focus.png) 21 21;
+		border-style: solid;
 	}
 }
 
@@ -2147,12 +2287,14 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 .enyo-first.enyo-input.enyo-input-focus, .enyo-first > .enyo-input.enyo-input-focus {
 	padding-bottom: 12px;
 	border-width: 14px 14px 2px 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/input-first-focus.png) 14 14 2 14;
 }
 
 .enyo-last.enyo-input.enyo-input-focus, .enyo-last > .enyo-input.enyo-input-focus {
 	padding-top: 12px;
 	border-width: 2px 14px 14px 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/input-last-focus.png) 2 14 14 14;
 }
 
@@ -2162,19 +2304,23 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 .enyo-box-input.enyo-input.enyo-input-focus, .enyo-middle.enyo-input.enyo-input-focus, .enyo-middle > .enyo-input.enyo-input-focus {
 	background-color: transparent;
 	border-width: 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/input-middle-focus.png) 14 14;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-first.enyo-input.enyo-input-focus, .enyo-first > .enyo-input.enyo-input-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/input-first-focus.png) 21 21 3 21;
+		border-style: solid;
 	}
 	.enyo-last.enyo-input.enyo-input-focus, .enyo-last > .enyo-input.enyo-input-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/input-last-focus.png) 3 21 21 21;
+		border-style: solid;
 	}
 	
 	.enyo-box-input.enyo-input.enyo-input-focus, .enyo-middle.enyo-input.enyo-input-focus, .enyo-middle > .enyo-input.enyo-input-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/input-middle-focus.png) 21 21;
+		border-style: solid;
 	}
 }
 
@@ -2217,14 +2363,17 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 
 .enyo-input.enyo-tool-input.enyo-input-focus {
 	-webkit-border-image: url(palm/themes/Onyx/images/input-tool-focus.png) 6 6 6 6;
+	border-style: solid;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-input.enyo-tool-input {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/input-tool.png) 9 9 9 9;
+		border-style: solid;
 	}
 	.enyo-input.enyo-tool-input.enyo-input-focus {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/input-tool-focus.png) 9 9 9 9;
+		border-style: solid;
 	}
 }
 
@@ -2260,17 +2409,17 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 /* palm/themes/Onyx/css/Spinner.css */
 
 .enyo-spinner {
-	width: 32px;
-	height: 32px;
-	-webkit-box-sizing: border-box;
-	background-image: url(palm/themes/Onyx/images/spinner.png);
+    width: 32px;
+    height: 32px;
+    -webkit-box-sizing: border-box;
+    background-image: url(palm/themes/Onyx/images/spinner.png); 
 }
 
 .enyo-spinner-large {
-	width: 128px;
-	height: 128px;
-	-webkit-box-sizing: border-box;
-	background-image: url(palm/themes/Onyx/images/spinner-large.png);
+    width: 128px;
+    height: 128px;
+    -webkit-box-sizing: border-box;
+    background-image: url(palm/themes/Onyx/images/spinner-large.png); */
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
@@ -2293,6 +2442,7 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 	right: 0px;
 	bottom: 0;
 	border-width: 32px 24px 32px 24px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/toaster-dialog.png) 32 24 32 24 stretch stretch;
 }
 
@@ -2304,6 +2454,7 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-toaster-dialog {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/toaster-dialog.png) 48 36 48 36 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -2411,6 +2562,7 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 .enyo-webview-popup-spinner {
 	min-width: 0px;
 	-webkit-border-image: none;
+	border-style: solid;
 }
 
 
@@ -2419,6 +2571,7 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 .enyo-modaldialog {
 	width: 320px;
 	border-width: 42px 24px 24px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/dialog.png) 42 24 24 24 stretch stretch;
 	-webkit-transition-property: opacity;
 	-webkit-transition-duration: 0.5s;
@@ -2440,26 +2593,31 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 .enyo-modaldialog-container .enyo-group,
 .enyo-modaldialog-container .group {
 	border-width: 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/dialog-group-unlabeled.png) 14 14 repeat repeat;
 	margin: 8px 0;
 }
 .enyo-modaldialog-container .enyo-group.labeled {
 	border-width: 36px 14px 14px 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/dialog-group-labeled.png) 36 14 14 14 repeat repeat;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-modaldialog {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/dialog.png) 63 36 36 36 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-modaldialog-container .enyo-group,
 	.enyo-modaldialog-container .group {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/dialog-group-unlabeled.png) 21 21 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-modaldialog-container .enyo-group.labeled {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/dialog-group-labeled.png) 54 21 21 21 stretch stretch;
+		border-style: solid;
 	}
 }
 
@@ -2468,8 +2626,9 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 /* palm/themes/Onyx/css/FilePicker.css */
 
 .enyo-filepicker {
-	width: 450px;
+	padding: 5px;
 	border-width: 24px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/filepicker.png) 25 stretch stretch;
 }
 
@@ -2485,27 +2644,32 @@ FIXME: we almost always want some padding on a enyo-item, except when it's surro
 .enyo-filepicker-mainview .enyo-group,
 .enyo-filepicker-mainview .group {
 	border-width: 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/dialog-group-unlabeled.png) 14 14 repeat repeat;
 	margin: 8px 0;
 }
 
 .enyo-filepicker-mainview .enyo-group.labeled {
 	border-width: 36px 14px 14px 14px;
+	border-style: solid;
 	-webkit-border-image: url(palm/themes/Onyx/images/dialog-group-labeled.png) 36 14 14 14 repeat repeat;
 }
 
 @media (-webkit-min-device-pixel-ratio:1.5) {
 	.enyo-filepicker {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/filepicker.png) 36 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-filepicker-mainview .enyo-group,
 	.enyo-filepicker-mainview .group {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/modaldialog-group-unlabeled.png) 21 21 stretch stretch;
+		border-style: solid;
 	}
 	
 	.enyo-filepicker-mainview .enyo-group.labeled {
 		-webkit-border-image: url(palm/themes/Onyx/images-1.5/modaldialog-group-labeled.png) 54 21 21 21 stretch stretch;
+		border-style: solid;
 	}
 }
 

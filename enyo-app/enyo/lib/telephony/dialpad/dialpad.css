@@ -52,6 +52,7 @@
 	padding: 0;
 	background: none;
 	-webkit-border-image:none;
+	border-style: solid;
 }
 
 .dialpadbutton-bottom-back.enyo-button-down{
@@ -59,6 +60,7 @@
 	min-width: 0;
 	padding: 0;
 	-webkit-border-image:none;
+	border-style: solid;
 }
 .dialpad-backspace .enyo-button-icon {
 	margin-bottom: 0px;
@@ -116,6 +118,7 @@
 .dialpadbutton-top-middle.enyo-button-down,
 .dialpadbutton-top-left.enyo-button-down  {
 	-webkit-border-image: url(images/pin-key-highlight.png) 1 0 1 0;
+	border-style: solid;
 }
 .dialpadbutton-left.enyo-button-down,
 .dialpadbutton-middle.enyo-button-down,
@@ -139,15 +142,18 @@
 .dial-button {
 	height: 66px;
 	border-width: 0 26px;
+	border-style: solid;
 	-webkit-border-image: url(images/dial-button.png) 0 26 132 26 repeat repeat;
 }
 
 .dial-button.enyo-button-down {
 	-webkit-border-image: url(images/dial-button.png) 132 26 0 26 repeat repeat;
+	border-style: solid;
 }
 
 .dial-button.enyo-button-disabled {
 	-webkit-border-image: url(images/dial-button.png) 66 26 66 26 repeat repeat;
+	border-style: solid;
 }
 .pinCardBackground {
 	background: url(images/backdrop-firstuse.png) top left;
@@ -163,6 +169,7 @@
 .cust-enyo-popup{
 	-webkit-border-image: url(images/popup-bg.png) 20 20 20 20;
 	-webkit-box-sizing: border-box;
+	border-style: solid;
 	border-width: 20px;
 	left: 0px;
 	min-width: 355px;

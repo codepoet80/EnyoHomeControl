@@ -1,10 +1,11 @@
+/* Enyo v1.0 | Copyright 2011-2012 Hewlett-Packard Development Company, L.P. | enyojs.com | enyojs.com/license */
 // dependency-loader.js
 
 (function() {
 enyo.sheet = function(a) {
 document.write('<link href="' + a + '" media="screen" rel="stylesheet" type="text/css" />');
 }, enyo.script = function(a) {
-document.write('<script src="' + a + '" type="text/javascript" onerror="console.error(\'Error loading script ' + a + "')\"></script>");
+document.write('<script src="' + a + '" type="text/javascript" charset="utf-8" onerror="console.error(\'Error loading script ' + a + "')\"></script>");
 }, enyo.path = {
 pattern: /\$([^\/\\]*)(\/)?/g,
 rewrite: function(a) {
@@ -13,7 +14,7 @@ b = !0;
 var d = enyo.path.paths[c];
 return d ? d.charAt(d.length - 1) == "/" ? d : d + "/" : "";
 };
-do b = !1, c = c.replace(this.pattern, d); while (b);
+do b = !1, c = c ? c.replace(this.pattern, d) : ""; while (b);
 return c;
 },
 paths: {
@@ -1492,9 +1493,16 @@ type: "text/javascript",
 src: a
 }));
 }, enyo.getCookie = function(a) {
+if(typeof localStorage != "undefined") {
+return localStorage.getItem(a);   
+} else {
 var b = document.cookie.match(new RegExp("(?:^|; )" + a + "=([^;]*)"));
 return b ? decodeURIComponent(b[1]) : undefined;
+}
 }, enyo.setCookie = function(a, b, c) {
+if(typeof localStorage != "undefined") {
+        localStorage.setItem(a, b);
+} else {
 var d = a + "=" + encodeURIComponent(b), e = c || {}, f = e.expires;
 if (typeof f == "number") {
 var g = new Date;
@@ -1504,6 +1512,7 @@ f && f.toUTCString && (e.expires = f.toUTCString());
 var h, i;
 for (h in e) d += "; " + h, i = e[h], i !== !0 && (d += "=" + i);
 document.cookie = d;
+}
 }, enyo.dom = {
 getComputedStyle: function(a) {
 return window.getComputedStyle(a, null);
@@ -1569,9 +1578,9 @@ setClipboard: function(a) {
 this._clipboardTextArea || (this._clipboardTextArea = enyo.makeElement("textarea")), this._clipboardTextArea.value = a, document.body.appendChild(this._clipboardTextArea), enyo.keyboard.suspend(), this._clipboardTextArea.select(), document.execCommand("cut"), this._clipboardTextArea.blur(), enyo.keyboard.resume(), document.body.removeChild(this._clipboardTextArea);
 },
 getClipboard: function(a) {
-this._clipboardTextArea || (this._clipboardTextArea = enyo.makeElement("textarea")), this._clipboardTextArea.value = "", document.body.appendChild(this._clipboardTextArea), enyo.keyboard.suspend(), this._clipboardTextArea.select(), window.PalmSystem ? PalmSystem.paste() : document.execCommand("paste"), enyo.asyncMethod(this, function() {
-a(this._clipboardTextArea.value), this._clipboardTextArea.blur(), enyo.keyboard.resume(), document.body.removeChild(this._clipboardTextArea);
-});
+this._clipboardTextArea || (this._clipboardTextArea = enyo.makeElement("textarea"), this._clipboardTextArea.oninput = function() {
+this._clipboardTextArea.value !== "" && a(this._clipboardTextArea.value), this._clipboardTextArea.value = "", this._clipboardTextArea.blur(), document.body.removeChild(this._clipboardTextArea);
+}.bind(this)), document.body.appendChild(this._clipboardTextArea), this._clipboardTextArea.value = "", enyo.keyboard.suspend(), this._clipboardTextArea.select(), window.PalmSystem ? PalmSystem.paste() : document.execCommand("paste");
 }
 };
 
@@ -1641,11 +1650,11 @@ enyo.job.stop(a), b();
 }, enyo.job.stop = function(a) {
 enyo.job._jobs[a] && (clearTimeout(enyo.job._jobs[a]), delete enyo.job._jobs[a]);
 }, function() {
-var a = window.webkitRequestAnimationFrame;
+var a = window.requestAnimationFrame;
 enyo.requestAnimationFrame = a ? enyo.bind(window, a) : function(a) {
 return window.setTimeout(a, Math.round(1e3 / 60));
 };
-var a = window.webkitCancelRequestAnimationFrame || window.clearTimeout;
+var a = window.cancelAnimationFrame || window.clearTimeout;
 enyo.cancelRequestAnimationFrame = enyo.bind(window, a);
 if (a) {
 var b = enyo.requestAnimationFrame(enyo.nop);
@@ -1872,7 +1881,23 @@ return this._animation && this._animation.animating;
 });
 
 // dom/Dispatcher.js
-
+//Disable Chromium intervention on older framework (see: https://developer.chrome.com/blog/scrolling-intervention/)
+enyo.passiveSupported= function() {
+ passiveSupported = false;
+ try {
+  var options = {
+  get passive() {
+   passiveSupported = true;
+   return false;
+  },
+ };
+ window.addEventListener("test", null, options);
+ window.removeEventListener("test", null, options);
+ } catch (err) {
+  passiveSupported = false;
+ }
+ return passiveSupported;
+};
 enyo.$ = {}, enyo.dispatcher = {
 handlerName: "dispatchDomEvent",
 captureHandlerName: "captureDomEvent",
@@ -1884,8 +1909,12 @@ events: [ "mousedown", "mouseup", "mouseover", "mouseout", "mousemove", "mousewh
 windowEvents: [ "resize", "load", "unload" ],
 connect: function() {
 var a = enyo.dispatcher;
-for (var b = 0, c; c = a.events[b]; b++) document.addEventListener(c, enyo.dispatch, !1);
-for (b = 0, c; c = a.windowEvents[b]; b++) window.addEventListener(c, enyo.dispatch, !1);
+ for (var b = 0, c; c = a.events[b]; b++) {
+  var options = !1;
+  if (enyo.passiveSupported()) options = { passive:false }
+    document.addEventListener(c, enyo.dispatch, options);
+ } 
+ for (b = 0, c; c = a.windowEvents[b]; b++) window.addEventListener(c, enyo.dispatch, !1);
 },
 findDispatchTarget: function(a) {
 var b, c = a;
@@ -2679,7 +2708,7 @@ return this.ctor.publishedList = a;
 // compatibility/webkitGesture.js
 
 enyo.requiresWindow(function() {
-window.PalmSystem || (enyo.dispatcher.features.push(function(a) {
+(enyo.dispatcher.features.push(function(a) {
 enyo.iphoneGesture[a.type] && enyo.iphoneGesture[a.type](a);
 }), enyo.iphoneGesture = {
 _send: function(a, b) {
@@ -2699,14 +2728,17 @@ touchend: function(a) {
 this._send("mouseup", a.changedTouches[0]), this._send("click", a.changedTouches[0]);
 },
 connect: function() {
-document.ontouchstart = enyo.dispatch, document.ontouchmove = enyo.dispatch, document.ontouchend = enyo.dispatch;
-}
+ if (enyo.passiveSupported()) options = {passive:false};
+  document.addEventListener("touchstart", enyo.dispatch, options);
+  document.addEventListener("touchmove", enyo.dispatch, options);
+  document.addEventListener("touchend", enyo.dispatch, options);
+ }
 }, enyo.iphoneGesture.connect());
 });
 
 // compatibility/webosGesture.js
 
-window.PalmSystem ? (enyo.dispatcher.features.push(function(a) {
+window.PalmSystem && (enyo.dispatcher.features.push(function(a) {
 enyo.webosGesture[a.type] && enyo.webosGesture[a.type](a);
 }), enyo.webosGesture = {
 mousedown: function(a) {
@@ -2719,12 +2751,13 @@ target: enyo.webosGesture.lastDownTarget
 }, b);
 enyo.dispatch(c);
 }, Mojo.screenOrientationChanged = function() {}, enyo.requiresWindow(function() {
-document.addEventListener("gesturestart", enyo.dispatch), document.addEventListener("gesturechange", enyo.dispatch), document.addEventListener("gestureend", enyo.dispatch);
-})) : webosEvent = {
+if (enyo.passiveSupported()) options = {passive:false};
+document.addEventListener("touchstart", enyo.dispatch, options), document.addEventListener("touchmove", enyo.dispatch, options), document.addEventListener("touchend", enyo.dispatch, options);
+})), typeof webosEvent == "undefined" && (webosEvent = {
 event: enyo.nop,
 start: enyo.nop,
 stop: enyo.nop
-};
+});
 
 // base/layout/Grid.js
 
@@ -2868,7 +2901,7 @@ var a = (new Date).getTime(), b = 0, c, d, e = enyo.bind(this, function() {
 var f = (new Date).getTime();
 this.job = enyo.requestAnimationFrame(e);
 var g = f - a;
-a = f, this.dragging && (this.y0 = this.y = this.uy, this.x0 = this.x = this.ux), b += g, this.fixedTime && !this.isInOverScroll() && (b = this.interval), b = this.simulate(b), d != this.y || c != this.x ? this.scroll() : this.dragging || (this.stop(!0), this.scroll()), d = this.y, c = this.x;
+a = f, this.dragging && (this.y0 = this.y = this.uy, this.x0 = this.x = this.ux), b += Math.max(16, g), this.fixedTime && !this.isInOverScroll() && (b = this.interval), b = this.simulate(b), d != this.y || c != this.x ? this.scroll() : this.dragging || (this.stop(!0), this.scroll()), d = this.y, c = this.x;
 });
 this.job = enyo.requestAnimationFrame(e);
 },
@@ -3250,7 +3283,7 @@ create: function() {
 this.inherited(arguments), this.$.scroll.kFrictionDamping = .85;
 },
 layoutKindChanged: function() {
-this.inherited(arguments), this.scrollH = this.layoutKind == "HFlexLayout";
+this.inherited(arguments), this.scrollH = this.layoutKind == "HFlexLayout" || this.layoutKind === enyo.HFlexLayout;
 var a = this.revealAmount + "px";
 this.$.client.applyStyle("padding", this.scrollH ? "0 " + a : a + " 0");
 },
@@ -5680,11 +5713,11 @@ preload: !0,
 audioClass: null
 },
 create: function() {
-this.inherited(arguments), this.srcChanged(), this.preloadChanged(), this.audioClassChanged();
+this.inherited(arguments), this.srcChanged();
 },
 srcChanged: function() {
 var a = enyo.path.rewrite(this.src);
-window.PhoneGap ? this.media = new Media(a) : (this.audio = new Audio, this.audio.src = a);
+window.PhoneGap ? this.media = new Media(a) : (this.audio && this.audio.pause(), this.audio = new Audio, this.audio.src = a), this.preloadChanged(), this.audioClassChanged();
 },
 preloadChanged: function() {
 this.audio && this.audio.setAttribute("preload", this.preload ? "auto" : "none");
@@ -5838,6 +5871,7 @@ return enyo.fetchConfigFile("$enyo/../framework_config.json");
 }, enyo.fetchDeviceInfo = function() {
 return window.PalmSystem ? JSON.parse(PalmSystem.deviceInfo) : undefined;
 }, enyo.requiresWindow(function() {
+if ((window.PalmSystem) && (window.PalmSystem.getResource) && (!window.palmGetResource)) {window.palmGetResource = PalmSystem.getResource;}
 window.addEventListener("load", enyo.ready, !1), window.addEventListener("resize", enyo.sendOrientationChange, !1), Mojo = window.Mojo || {}, Mojo.lowMemoryNotification = function(a) {
 enyo.dispatch({
 type: "lowMemory",
@@ -6216,7 +6250,9 @@ var a = window.opener || window.rootWindow || window.top || window;
 return a.setTimeout || (a = window), a;
 },
 getWindows: function() {
-var a = this.getRootWindow(), b = a.enyo.windows.manager, c = b._windowList, d = {};
+var a = this.getRootWindow();
+if (typeof(a) === "undefined" || typeof(a.enyo) === "undefined" || typeof(a.enyo.windows) === "undefined" || typeof(a.enyo.windows.manager) === "undefined") return [];
+b = a.enyo.windows.manager, c = b._windowList, d = {};
 for (var e in c) this.isValidWindow(c[e]) && (d[e] = c[e]);
 return b._windowList = d, d;
 },
@@ -6417,7 +6453,7 @@ onResult: ""
 components: [ {
 name: "getAppPath",
 kind: "enyo.PalmService",
-service: "palm://com.palm.applicationManager/",
+service: "palm://com.webos.applicationManager/",
 method: "getAppBasePath",
 onResponse: "gotAppInfo"
 } ],
@@ -6491,7 +6527,7 @@ onPickFile: ""
 dismissWithClick: !1,
 modal: !0,
 scrim: !0,
-filePickerPath: "/usr/lib/luna/system/luna-systemui/app/FilePicker/filepicker.html",
+filePickerPath: "/usr/palm/applications/com.palm.systemui/app/FilePicker/filepicker.html",
 components: [ {
 className: "enyo-filepicker-container",
 components: [ {
@@ -7005,7 +7041,7 @@ lastUrl: "",
 style: "display: block; -webkit-transform:translate3d(0,0,0)",
 nodeTag: "object",
 create: function() {
-this.inherited(arguments), this.history = [], this.callQueue = [], this.dispatcher = enyo.dispatcher, this.domAttributes.type = "application/x-palm-browser", this.log("cache", this.cacheAdapter), this.domAttributes["x-palm-cache-plugin"] = this.cacheAdapter, this._flashGestureLock = !1;
+this.inherited(arguments), this.history = [], this.callQueue = [], this.dispatcher = enyo.dispatcher, this.domAttributes.type = "application/x-palm-browser", this.domAttributes["x-palm-cache-plugin"] = this.cacheAdapter, this._flashGestureLock = !1;
 },
 destroy: function() {
 this.callQueue = null, this.node.eventListener = null, this.inherited(arguments);
@@ -7021,10 +7057,10 @@ adapterReady: function() {
 return this.hasNode() && this.node.openURL;
 },
 adapterInitialized: function() {
-this.log("node", this.hasNode(), "func", this.node && this.node.openUrl), this._serverConnected = !1, this.connect();
+this._serverConnected = !1, this.connect();
 },
 serverConnected: function() {
-this.log(), this._serverConnected = !0, this.initView(), this.doConnected();
+this._serverConnected = !0, this.initView(), this.doConnected();
 },
 connect: function() {
 this.adapterReady() && !this._serverConnected && this._connect();
@@ -7113,13 +7149,13 @@ callBrowserAdapter: function(a, b) {
 if (this.adapterReady() && this._serverConnected) {
 for (var c = 0, d; d = this.callQueue[c]; c++) this._callBrowserAdapter(d.name, d.args);
 this.callQueue = [], this._callBrowserAdapter(a, b);
-} else a !== "disconnectBrowserServer" && (this.log("queued!", a), this.callQueue.push({
+} else a !== "disconnectBrowserServer" && (this.callQueue.push({
 name: a,
 args: b
 }), this.adapterReady() && !this._serverConnected && this.connect());
 },
 _callBrowserAdapter: function(a, b) {
-a == "setHTML" ? this.log(a) : this.log(a, b), this.node[a] ? this.node[a].apply(this.node, b) : this.log("no such function", a);
+this.node[a] && this.node[a].apply(this.node, b);
 },
 showFlashLockedMessage: function() {
 this.flashPopup == null && (this.flashPopup = this.createComponent({
@@ -7141,7 +7177,7 @@ urlTitleChanged: function(a, b, c, d) {
 this.lastUrl = this.url, this.url = a, this.doPageTitleChanged(enyo.string.escapeHtml(b), a, c, d);
 },
 loadStarted: function() {
-this.log(), this.doLoadStarted();
+this.doLoadStarted();
 },
 loadProgressChanged: function(a) {
 this.doLoadProgress(a);
@@ -7150,7 +7186,7 @@ loadStopped: function() {
 this.log(), this.doLoadStopped();
 },
 documentLoadFinished: function() {
-this.log(), this.doLoadComplete();
+this.doLoadComplete();
 },
 mainDocumentLoadFailed: function(a, b, c, d) {
 this.doError(b, d + ": " + c);
@@ -7203,7 +7239,7 @@ this.doNewPage(a);
 scrollTo: function(a, b) {},
 metaViewportSet: function(a, b, c, d, e, f) {},
 browserServerDisconnected: function() {
-this.log(), this._serverConnected = !1, this.doDisconnected();
+this._serverConnected = !1, this.doDisconnected();
 },
 showPrintDialog: function() {
 this.doPrint();
@@ -8467,6 +8503,7 @@ confirmWhenAutoHidden: !1,
 allowLeft: !0
 },
 triggerRatio: .35,
+dragOffset: 0,
 className: "enyo-item enyo-swipeableitem",
 lastConfirmIndex: null,
 events: {
@@ -8504,10 +8541,10 @@ flickHandler: function(a, b) {
 return this.handlingDrag;
 },
 dragstartHandler: function(a, b) {
-return this.resetPosition(), this.swipeable && b.horizontal && !this.confirmShowing && this.hasNode() ? (this.triggerDistance = this.fetchTriggerDistance(), this.index = b.rowIndex, this.handlingDrag = !0, !0) : this.fire("ondragstart", b);
+return this.resetPosition(), this.swipeable && b.horizontal && !this.confirmShowing && this.hasNode() ? (this.dragOffset = this.getDx(b), this.triggerDistance = this.fetchTriggerDistance(), this.index = b.rowIndex, this.handlingDrag = !0, !0) : this.fire("ondragstart", b);
 },
 dragHandler: function(a, b) {
-var c = this.getDx(b);
+var c = this.getDx(b) - this.dragOffset;
 if (this.handlingDrag) return this.hasNode() ? (this.node.style.webkitTransform = "translate3d(" + c + "px, 0, 0)", this.doDrag(c)) : enyo.log("drag with no node!"), !0;
 },
 dragfinishHandler: function(a, b) {
@@ -10485,6 +10522,7 @@ className: "enyo-toaster",
 published: {
 flyInFrom: "bottom"
 },
+dragOffset: 0,
 chrome: [ {
 name: "animator",
 kind: enyo.Animator,
@@ -10516,6 +10554,9 @@ e += this.flyInFrom == "top" || this.flyInFrom == "left" ? -b : b, e += "%)", c.
 finishAnimate: function(a, b) {
 this.isOpen ? (enyo.asyncMethod(this, "afterOpen"), this.$.animator.setNode(null)) : this.hide();
 },
+finishOpen: function() {
+this.renderOpen(), this.showHideScrim(this.isOpen);
+},
 isDraggableEvent: function(a) {
 var b = a.dispatchTarget;
 return b && b.slidingHandler;
@@ -10524,11 +10565,11 @@ isHorizontal: function() {
 return this.flyInFrom == "right" || this.flyInFrom == "left";
 },
 dragstartHandler: function(a, b) {
-this.isDraggableEvent(b) && (this.dragging = !0, this.dragD0 = 0);
+this.isDraggableEvent(b) && (this.dragging = !0, this.dragD0 = 0, this.dragOffset = this.isHorizontal() ? b.dx : b.dy);
 },
 dragHandler: function(a, b) {
 if (this.dragging) {
-var c = this.isHorizontal() ? b.dx : b.dy;
+var c = this.isHorizontal() ? b.dx - this.dragOffset : b.dy - this.dragOffset;
 this.dragD = this.dragD0 - c, this.dragD0 = c;
 if (this.dragD0 * (this.flyInFrom == "right" || this.flyInFrom == "bottom" ? 1 : -1) > 0) {
 var d = "translate3d(" + (this.isHorizontal() ? this.dragD0 + "px,0,0)" : "0," + this.dragD0 + "px,0)");
@@ -10815,11 +10856,8 @@ this.shouldDragSelect = b < this.slidePosition;
 if (b < this.dragMin || b > this.dragMax && !this.overSliding || b < this.dragMax && this.overSliding) return {
 select: this.getDragSelect()
 };
-if (this.overSliding && !this.dismissible) {
 var c = this.lastDragDx || 0;
-b = (a.dx - c) / 4 + this.slidePosition;
-}
-this.lastDragDx = a.dx;
+this.overSliding && !this.dismissible ? b = (a.dx - c) / 4 + this.slidePosition : b = a.dx - c + this.slidePosition, this.lastDragDx = a.dx;
 var d = Math.max(this.dragMin, Math.min(b, this.overSliding ? 1e9 : this.dragMax));
 this.pendingDragMove = this._drag(d);
 },
@@ -10870,7 +10908,7 @@ name: "enyo.SlidingPane",
 kind: enyo.Pane,
 published: {
 multiView: !0,
-multiViewMinWidth: 500,
+multiViewMinWidth: 900,
 canAnimate: !0,
 dismissDistance: 100
 },

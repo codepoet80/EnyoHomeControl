@@ -1,6 +1,6 @@
 /*jslint white: false, onevar: false, nomen:false, plusplus: false */
 /*global RestrictedDialingList, document DialingShortcuts, window, console, kit, SystemService, TelephonyService, _, ContactsUI, ContactsLib, Class, App, enyo, $L, $H, $break, Event, Future, MojoDB, mapReduce, MainStageName, setTimeout, clearTimeout, Messaging, AudioTag, Image, PalmSystem, TransportPickerModel, Template, CharacterCounter, MessagingDB, MessagingUtils, MessagingMojoService, ChatFlags, BucketDateFormatter, CONSTANTS, MenuWrapper, SetTopicAssistant*/
-/* Copyright 2010 Palm, Inc.  All rights reserved. */
+/*  */
 
 PinAction = {	
 	PinCode_Lock: 1, 

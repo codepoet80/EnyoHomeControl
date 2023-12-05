@@ -313,7 +313,7 @@ var AccountsUtil = (function () {
 		},
 
 		// The path to the accounts library		
-		libPath: enyo.path.paths["-..-lib-accounts"],
+		libPath: enyo.path.paths["-..-lib-accounts"] ? enyo.path.paths["-..-lib-accounts"] : "$enyo-lib/accounts/",
 		
 		// Localized strings
 		PAGE_TITLE_ACCOUNTS:		accountsRb.$L("Accounts"),

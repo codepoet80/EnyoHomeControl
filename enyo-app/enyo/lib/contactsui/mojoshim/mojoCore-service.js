@@ -36,9 +36,15 @@ function assignPrototype(fn, proto) {
 				console.warn("No activity id available for service request!");
 			}
 			else {
-				parameters.$activity = {
+				if (true) {
+					console.log("mojoCore-service: skipping problematic activity id decoration!");
+				}
+				else {
+					// dead code
+					parameters.$activity = {
 					activityId: PalmSystem.activityId
-				};
+					};
+				}
 			}
 		}
 		

@@ -59,6 +59,7 @@
 	-webkit-border-image: url(images/popup-bg.png) 20 20 20 20 stretch stretch;
 	-webkit-box-sizing: border-box;
 	border-width: 20px;
+	border-style: solid;
 	left: 0px;
 	min-width: 300px;
 	position: fixed;

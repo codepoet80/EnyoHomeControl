@@ -244,13 +244,14 @@ enyo.kind({
 		if (!this.addTemplates || inIndex > this.addTemplates.length)
 			return false;
 		// The last item in the list is "Find More ..."
+		//Disable the "HP Find More" option
 		if (inIndex == this.addTemplates.length) {
 			// Don't add "Find more" for the Phone app
-			if (this.capability === "PHONE")
+			//if (this.capability === "PHONE")
 				return false;
-			this.$.templateIcon.setSrc(AccountsUtil.libPath + "images/appcatalog-32x32.png");
-			this.$.templateName.setContent(AccountsUtil.TEXT_FIND_MORE);
-			return true;
+			//this.$.templateIcon.setSrc(AccountsUtil.libPath + "images/appcatalog-32x32.png");
+			//this.$.templateName.setContent(AccountsUtil.TEXT_FIND_MORE);
+			//return true;
 		}
 		if (this.addTemplates[inIndex].icon)
 			this.$.templateIcon.setSrc(this.addTemplates[inIndex].icon.loc_32x32);

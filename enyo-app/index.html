@@ -62,23 +62,6 @@
 				e.preventDefault();
 			}
 		};
-
-		document.addEventListener("touchstart", onTouchStart, { passive: false });
-		document.addEventListener("touchmove", onTouchMove, { passive: false });
-
-		//Stop double-firing click events (Android and iOS)
-		var lastClick = 0;
-		function checkClickFilter(e) {
-			//if (navigator.userAgent.toLowerCase().indexOf("android") != -1) {
-				var timeStamp = Date.now()
-				var elapsed = timeStamp - lastClick;
-				lastClick = timeStamp;
-				if ((elapsed && elapsed > 15 && elapsed < 300)) {
-					return false;
-				} 
-			//}
-			return true;
-		}
 	</script>
 </head>
 <body>

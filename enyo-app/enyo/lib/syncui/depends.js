@@ -1,4 +1,4 @@
-﻿enyo.depends(
+enyo.depends(
 	"$enyo-lib/accounts/",
 	"source/missingCredentials.js",
 	"source/syncDashboard.js",

@@ -116,6 +116,7 @@
 .dialpadbutton-top-middle.enyo-button-down,
 .dialpadbutton-top-left.enyo-button-down  {
 	-webkit-border-image: url(../images/pin-key-highlight.png) 1 0 1 0;
+	border-style: solid;
 }
 .dialpadbutton-left.enyo-button-down,
 .dialpadbutton-middle.enyo-button-down,
@@ -139,20 +140,24 @@
 .dial-button {
 	height: 66px;
 	border-width: 0 26px;
+	border-style: solid;
 	-webkit-border-image: url(images/dial-button.png) 0 26 132 26 repeat repeat;
 }
 
 .dial-button.enyo-button-down {
 	-webkit-border-image: url(images/dial-button.png) 132 26 0 26 repeat repeat;
+	border-style: solid;
 }
 
 .dial-button.enyo-button-disabled {
 	-webkit-border-image: url(images/dial-button.png) 66 26 66 26 repeat repeat;
+	border-style: solid;
 }
 
 .pin-menu-button {
 	height: 60px;
 	-webkit-border-image: url(images/pin-menu-button-tall.png) 0 25 60 25 repeat repeat;
+	border-style: solid;
 	border-width: 0 25px 0 25px;
 	font-size: 16px;
 	color: white;
@@ -160,6 +165,7 @@
 
 .pin-menu-button.enyo-button-down {
 	-webkit-border-image: url(images/pin-menu-button-tall.png) 60 25 0 25 repeat repeat;
+	border-style: solid;
 }
 
 .pinCardBackground {

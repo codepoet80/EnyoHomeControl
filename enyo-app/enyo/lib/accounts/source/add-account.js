@@ -64,13 +64,14 @@ enyo.kind({
 		if (!this.templates || inIndex > this.templates.length)
 			return false;
 		// The last item in the list is "Find More ..."
+		// Disable the HP Find More bits ;)
 		if (inIndex == this.templates.length) {
 			// Don't add "Find more" for the Phone app
-			if (this.capability === "PHONE")
-				return false;
-			this.$.templateIcon.setSrc(AccountsUtil.libPath + "images/appcatalog-32x32.png");
-			this.$.templateName.setContent(AccountsUtil.TEXT_FIND_MORE);
-			return true;
+			//if (this.capability === "PHONE")
+			return false;
+			//this.$.templateIcon.setSrc(AccountsUtil.libPath + "images/appcatalog-32x32.png");
+			//this.$.templateName.setContent(AccountsUtil.TEXT_FIND_MORE);
+			//return true;
 		}
 		if (this.templates[inIndex].icon)
 			this.$.templateIcon.setSrc(this.templates[inIndex].icon.loc_32x32);
