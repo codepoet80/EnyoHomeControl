@@ -31,7 +31,7 @@ enyo.kind({
         this.currentHomebridgeApiUrl = defaultHomebridgeApiUrl;
     },
     ConnectHome: function(sender, server, user, pass) {
-        enyo.warn("Connect called with server: " + server);
+        enyo.warn("Connect called with server: " + server + ", useSecure is: " + this.useSecure);
         if (server)
             this.currentHomebridgeApiUrl = server + "/api";
         if (server.indexOf("/") == -1)

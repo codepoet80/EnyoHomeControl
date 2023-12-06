@@ -148,10 +148,11 @@ enyo.kind({
 		this.server = Prefs.getCookie("server", "192.168.1.250");
 		this.username = Prefs.getCookie("username", "admin");
 		this.password = Prefs.getCookie("password", "");
+		//TODO: Make this selectable
+		this.homeHelper = this.$.myHomebridge;
+		this.homeHelper.useSecure = document.location.protocol == 'https:';	//TODO: Not working??
+
 		if (this.password != "") {
-			//TODO: Make this selectable
-			this.homeHelper = this.$.myHomebridge;
-			this.homeHelper.useSecure = document.location.protocol == 'https:';	//TODO: Not working??
 			this.loadHomeData();
 		} else {
 			this.doSignInOut();
