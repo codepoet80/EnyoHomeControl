@@ -1881,8 +1881,7 @@ return this._animation && this._animation.animating;
 });
 
 // dom/Dispatcher.js
-//Disable Chromium intervention on older framework (see: https://developer.chrome.com/blog/scrolling-intervention/)
-enyo.passiveSupported= function() {
+enyo.passiveSupported = function() {
  passiveSupported = false;
  try {
   var options = {
@@ -1909,12 +1908,12 @@ events: [ "mousedown", "mouseup", "mouseover", "mouseout", "mousemove", "mousewh
 windowEvents: [ "resize", "load", "unload" ],
 connect: function() {
 var a = enyo.dispatcher;
- for (var b = 0, c; c = a.events[b]; b++) {
-  var options = !1;
-  if (enyo.passiveSupported()) options = { passive:false }
-    document.addEventListener(c, enyo.dispatch, options);
- } 
- for (b = 0, c; c = a.windowEvents[b]; b++) window.addEventListener(c, enyo.dispatch, !1);
+for (var b = 0, c; c = a.events[b]; b++) {
+ var options = !1;
+ if (enyo.passiveSupported()) options = { passive:false }
+   window.addEventListener(c, enyo.dispatch, options);
+}
+for (b = 0, c; c = a.windowEvents[b]; b++) window.addEventListener(c, enyo.dispatch, !1);
 },
 findDispatchTarget: function(a) {
 var b, c = a;
@@ -2728,11 +2727,16 @@ touchend: function(a) {
 this._send("mouseup", a.changedTouches[0]), this._send("click", a.changedTouches[0]);
 },
 connect: function() {
- if (enyo.passiveSupported()) options = {passive:false};
-  document.addEventListener("touchstart", enyo.dispatch, options);
-  document.addEventListener("touchmove", enyo.dispatch, options);
-  document.addEventListener("touchend", enyo.dispatch, options);
- }
+var options;
+if (enyo.passiveSupported()) {
+ options = {passive:false};
+ document.addEventListener("touchstart", enyo.dispatch, options);
+ document.addEventListener("touchmove", enyo.dispatch, options);
+ document.addEventListener("touchend", enyo.dispatch, options);
+} else {
+ document.ontouchstart = enyo.dispatch, document.ontouchmove = enyo.dispatch, document.ontouchend = enyo.dispatch;
+}
+}
 }, enyo.iphoneGesture.connect());
 });
 
@@ -2751,7 +2755,8 @@ target: enyo.webosGesture.lastDownTarget
 }, b);
 enyo.dispatch(c);
 }, Mojo.screenOrientationChanged = function() {}, enyo.requiresWindow(function() {
-if (enyo.passiveSupported()) options = {passive:false};
+var options;
+if (enyo.passiveSupported()) var options = {passive:false}
 document.addEventListener("touchstart", enyo.dispatch, options), document.addEventListener("touchmove", enyo.dispatch, options), document.addEventListener("touchend", enyo.dispatch, options);
 })), typeof webosEvent == "undefined" && (webosEvent = {
 event: enyo.nop,
