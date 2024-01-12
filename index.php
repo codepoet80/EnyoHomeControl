@@ -12,7 +12,7 @@ $pwaLink = "enyo-app/";
 $playId = "";
 $playLink = "https://play.google.com/store/apps/details?id=" . $playId;
 $museumLink = "https://appcatalog.webosarchive.org/app/HomeControl";
-$icon = "enyo-app/icon.png";
+$icon = "enyo-app/icon";
 
 //Figure out what protocol the client wanted
 if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
@@ -41,7 +41,8 @@ if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
 
   <title><?php echo $title . $subtitle; ?></title>
   
-  <link id="favicon" rel="icon" type="image/png" sizes="64x64" href="<?php echo $icon;?>">
+  <link id="favicon" rel="icon" type="image/png" sizes="64x64" href="<?php echo $icon;?>.png">
+  <link id="favicon" rel="icon" type="image/png" sizes="256x256" href="<?php echo $icon;?>-256x256.png">
   <link href="<?php echo $PROTOCOL . "://www.webosarchive.org/app-template/"?>web.css" rel="stylesheet" type="text/css" >
 </head>
 <body>
