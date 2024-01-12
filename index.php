@@ -55,7 +55,7 @@ echo file_get_contents("https://www.webosarchive.org/menu.php?docRoot=" . $docRo
   <table width="100%" border=0 style="width:100%;border:0px"><tr><td align="center" style="width:100%;height:100%;border:0px">
   <div id="row">
     <div id="content" align="left">
-      <h1><img src="<?php echo $icon;?>" width="60" height="60" alt=""/><?php echo $title; ?></h1>
+      <h1><img src="<?php echo $icon;?>.png" width="60" height="60" alt=""/><?php echo $title; ?></h1>
       <p><?php echo $description; ?></p>
       <p>This front-end is available for most platforms as a Progressive Web App, but back-end requirements are challenging on modern devices. </p>
       <p>Please review the readme on <?php echo "<a href='" . $github . "'>GitHub</a>"?> for details.</p>
