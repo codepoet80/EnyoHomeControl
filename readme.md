@@ -6,10 +6,10 @@ Currently supported back-ends:
 
 + Homebridge
 
-Planned support:
+Future support:
 
++ Hue (no Cloud account will be required!)
 + Home Assistant
-+ Hue
 + Hoobs (maybe)
 
 ## What is This?
@@ -21,9 +21,9 @@ webOS technology was acquired by LG and repurposed for TVs and IoT devices, but 
 
 Releases of this app, and many other new and restored apps, can be found in the [webOS Archive App Museum](http://appcatalog.webosarchive.org).
 
-## Other Uses
+## Modern Uses
 
-Because this Enyo application is packaged for [cross-platform use](https://github.com/codepoet80/enyo1-bootplate), you can use it on a web server as well. However, if you do, you'll need to solve CORS. There's a few ways to work-around, but the easiest way I've found is to put a reverse proxy in front of the back-end, where you can control the CORS headers. When logging in to Home Control, give it the URL of the proxy, instead of the back-end. Here's my Apache2 config:
+Because this Enyo application is packaged for [cross-platform use](https://github.com/codepoet80/enyo1-bootplate), you can use it on a web server as a Progressive Web App (PWA). However, if you do, you'll need to solve CORS. There's a few ways to work-around, but the easiest way I've found is to put a reverse proxy in front of the back-end, where you can control the CORS headers. When logging in to Home Control, give it the URL of the proxy, instead of the back-end. Here's my Apache2 config:
 
 ```
 #Homebridge NodeJS service proxy
@@ -45,6 +45,9 @@ location / {
         proxy_pass http://192.168.1.250:80/;
 }
 ```
+
+An important note here is that modern browsers will also prevent you from crossing protocol schemes. If you load the PWA over HTTPS, you must provide an HTTPS URL for the back-end. If you load the PWA over HTTP, you must provide an HTTP URL for the back-end. Also Chrome won't advertise an app as "Installable" unless you use HTTPS, so you're likely going to be getting certs for your reverse proxy.
+
 ## Why?
 
 Aside from being a fan of the platform, the author thinks consumers have lost out now that the smart phone ecosystem has devolved into a duopoly.

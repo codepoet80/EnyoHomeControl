@@ -1911,7 +1911,7 @@ var a = enyo.dispatcher;
 for (var b = 0, c; c = a.events[b]; b++) {
  var options = !1;
  if (enyo.passiveSupported()) options = { passive:false }
-   window.addEventListener(c, enyo.dispatch, options);
+   document.addEventListener(c, enyo.dispatch, options);
 }
 for (b = 0, c; c = a.windowEvents[b]; b++) window.addEventListener(c, enyo.dispatch, !1);
 },
@@ -2728,14 +2728,10 @@ this._send("mouseup", a.changedTouches[0]), this._send("click", a.changedTouches
 },
 connect: function() {
 var options;
-if (enyo.passiveSupported()) {
- options = {passive:false};
- document.addEventListener("touchstart", enyo.dispatch, options);
- document.addEventListener("touchmove", enyo.dispatch, options);
- document.addEventListener("touchend", enyo.dispatch, options);
-} else {
- document.ontouchstart = enyo.dispatch, document.ontouchmove = enyo.dispatch, document.ontouchend = enyo.dispatch;
-}
+if (enyo.passiveSupported()) options = {passive:false};
+document.addEventListener("touchstart", enyo.dispatch, options);
+document.addEventListener("touchmove", enyo.dispatch, options);
+document.addEventListener("touchend", enyo.dispatch, options);
 }
 }, enyo.iphoneGesture.connect());
 });
