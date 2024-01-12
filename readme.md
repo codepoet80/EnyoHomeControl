@@ -48,7 +48,13 @@ location / {
 }
 ```
 
-An important note here is that modern browsers will also prevent you from crossing protocol schemes. If you load the PWA over HTTPS, you must provide an HTTPS URL for the back-end. If you load the PWA over HTTP, you must provide an HTTP URL for the back-end. Also Chrome won't advertise an app as "Installable" unless you use HTTPS, so you're likely going to be getting certs for your reverse proxy.
+An important note here is that modern browsers will also prevent you from crossing protocol schemes. If you load the PWA over HTTPS, you must provide an HTTPS URL for the back-end. If you load the PWA over HTTP, you must provide an HTTP URL for the back-end. 
+
+PWAs can be "installed" on most modern desktop platforms, and this works quite well on macOS, Windows 10/11 and Ubuntu. However, Chrome won't advertise an app as "Installable" unless you use HTTPS, so you're likely going to be getting certs for your reverse proxy.
+
+### iOS Homescreen
+
+PWAs can be pinned to your iOS homescreen, and this app contains all the metadata to look and feel like an app on your iOS device.
 
 ### Android APK
 
