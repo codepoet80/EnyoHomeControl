@@ -23,6 +23,8 @@ Releases of this app, and many other new and restored apps, can be found in the 
 
 ## Modern Uses
 
+### Browser PWA
+
 Because this Enyo application is packaged for [cross-platform use](https://github.com/codepoet80/enyo1-bootplate), you can use it on a web server as a Progressive Web App (PWA). However, if you do, you'll need to solve CORS. There's a few ways to work-around, but the easiest way I've found is to put a reverse proxy in front of the back-end, where you can control the CORS headers. When logging in to Home Control, give it the URL of the proxy, instead of the back-end. Here's my Apache2 config:
 
 ```
@@ -47,6 +49,10 @@ location / {
 ```
 
 An important note here is that modern browsers will also prevent you from crossing protocol schemes. If you load the PWA over HTTPS, you must provide an HTTPS URL for the back-end. If you load the PWA over HTTP, you must provide an HTTP URL for the back-end. Also Chrome won't advertise an app as "Installable" unless you use HTTPS, so you're likely going to be getting certs for your reverse proxy.
+
+### Android APK
+
+The code includes a Cordova wrapper that lets you build it for Android. Getting the build environment setup can be challenging (and building for Google Play is another set of hurdles not contemplated here), so I'll periodically post a Release on GitHub for sideloading.
 
 ## Why?
 
