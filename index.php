@@ -6,7 +6,7 @@
 //App Details
 $title = "Home Control";
 $subtitle = " | Enyo-based Home Automation";
-$description = "Home Control is a cross platform to-do list app created by provided by webOS Archive for retro and modern devices.";
+$description = "Home Control is a cross platform home automation app provided by webOS Archive for retro and modern devices.";
 $github = "https://github.com/codepoet80/EnyoHomeControl";
 $pwaLink = "enyo-app/";
 $playId = "";
