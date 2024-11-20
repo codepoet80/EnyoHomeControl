@@ -2,7 +2,7 @@
 <widget id="com.jonandnic.enyo.homecontrol" version="1.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Home Control</name>
     <description>Home automation controller</description>
-    <author email="curator@webosarchive.org" href="http://www.webosarchive.org">
+    <author email="webosarchive@gmail.com" href="http://www.webosarchive.org">
         webOS Archive
     </author>
     <icon src="www/icons/icon.png" />
