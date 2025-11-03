@@ -21,6 +21,10 @@ webOS technology was acquired by LG and repurposed for TVs and IoT devices, but 
 
 Releases of this app, and many other new and restored apps, can be found in the [webOS Archive App Museum](http://appcatalog.webosarchive.org).
 
+## Archival
+
+While this sort of worked, it was a constant battle between modern web server security and vintage devices -- and it was always problematic in modern environments due to CORS. I've archived this project as of the end of 2025, because it was too much of an uphill battle.
+
 ## Modern Uses
 
 ### Browser PWA
